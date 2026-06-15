@@ -1147,7 +1147,10 @@ const AUDIO = {
   prime() {
     if (this.unlocked) return;
     this.unlocked = true;
-    ["assets/audio/car.mp3", "assets/audio/engine.mp3", "assets/audio/rowing.mp3", "assets/audio/steps.mp3"].forEach(src => {
+    // Dauer-Loops + Tauchgang-Sounds (Buckelwal/Boot) freischalten – Letztere starten beim Ziehen,
+    // was iOS sonst blockiert, weil das Audioelement nie per Tipp-Geste entsperrt wurde.
+    ["assets/audio/car.mp3", "assets/audio/engine.mp3", "assets/audio/rowing.mp3", "assets/audio/steps.mp3",
+     "assets/audio/humpback_whale.mp3", "assets/audio/boat_pass.mp3"].forEach(src => {
       try {
         const a = this.get(src);
         a.loop = true; a.volume = 0;
