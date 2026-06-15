@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1d6fb8">
+  <!-- Vollbild als Web-App (Zum Home-Bildschirm hinzufügen) – iOS & Android -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Ocean Van">
+  <title>Deine Ocean Van Klangreise – Pro Ocean</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css?v=18">
+</head>
+<body>
+  <!-- Hinweis: Handy quer drehen (nur auf Smartphones im Hochformat sichtbar) -->
+  <div id="rotateHint" class="rotate-hint" aria-live="polite">
+    <div class="rotate-inner">
+      <div class="rotate-icon">📱</div>
+      <p data-i18n="rotateHint">Bitte dreh dein Handy quer – so passt die ganze Karte auf den Bildschirm.</p>
+    </div>
+  </div>
+  <div id="app" class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-logo-card">
+          <img class="brand-logo" src="assets/brand/proocean_logo.png" alt="Pro Ocean">
+        </div>
+        <div class="brand-text">
+          <p class="eyebrow" data-i18n="eyebrow">Ocean Van Lernspiel</p>
+          <h1 data-i18n="title">Deine Ocean Van Klangreise</h1>
+        </div>
+      </div>
+      <div class="top-actions">
+        <div id="scorePill" class="progress-pill score-pill hidden">🐚 0</div>
+        <div id="progressText" class="progress-pill">Start</div>
+        <button id="soundToggle" class="ghost-button" type="button" title="Ton an/aus">🔊</button>
+        <button id="langToggle" class="ghost-button" type="button">EN</button>
+        <button id="fullscreenAgain" class="ghost-button hide-mobile" type="button">⛶</button>
+      </div>
+    </header>
+
+    <!-- ====== KARTE / MAP ====== -->
+    <main id="mapScreen" class="map-screen hidden">
+      <div class="map-frame">
+        <div class="map-canvas" id="mapCanvas">
+          <svg class="map-bg" viewBox="0 0 1000 640" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <defs>
+              <linearGradient id="mapsea" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#7adcE8"/>
+                <stop offset="0.45" stop-color="#2592c9"/>
+                <stop offset="1" stop-color="#0b3f66"/>
+              </linearGradient>
+              <radialGradient id="deepzone" cx="0.5" cy="0.5" r="0.5">
+                <stop offset="0" stop-color="#062b4a"/>
+                <stop offset="0.7" stop-color="#08365a" stop-opacity="0.85"/>
+                <stop offset="1" stop-color="#08365a" stop-opacity="0"/>
+              </radialGradient>
+              <radialGradient id="lagoonzone" cx="0.5" cy="0.5" r="0.5">
+                <stop offset="0" stop-color="#8ef2e3" stop-opacity="0.75"/>
+                <stop offset="0.75" stop-color="#5fd9d2" stop-opacity="0.4"/>
+                <stop offset="1" stop-color="#5fd9d2" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <rect width="1000" height="640" fill="url(#mapsea)"/>
+            <!-- Tiefsee-Zone (Buckelwal) -->
+            <ellipse cx="620" cy="420" rx="260" ry="150" fill="url(#deepzone)"/>
+            <!-- Lautlose Lagune (Qualle) -->
+            <ellipse cx="320" cy="365" rx="120" ry="80" fill="url(#lagoonzone)"/>
+            <!-- Strand links oben (Start) -->
+            <path d="M0 0 L320 0 Q280 70 220 95 Q140 130 90 200 Q60 245 0 260 Z" fill="#f4d58d"/>
+            <path d="M0 0 L250 0 Q220 50 160 80 Q90 115 50 170 Q25 205 0 215 Z" fill="#f9e3ae"/>
+            <!-- Wintereis rechts oben (größer, deutliches Packeis) -->
+            <path d="M1000 0 L600 0 Q640 90 600 170 Q700 230 820 200 Q940 175 1000 220 Z" fill="#dcf0fa"/>
+            <path d="M1000 0 L660 0 Q700 70 680 140 Q780 180 880 155 Q960 138 1000 150 Z" fill="#f2fbff"/>
+            <path d="M1000 0 L760 0 Q800 55 800 110 Q890 120 1000 95 Z" fill="#ffffff"/>
+            <g stroke="#b9d7e6" stroke-width="2.5" opacity="0.7" fill="none">
+              <path d="M700 20 L740 70 L710 120"/>
+              <path d="M850 30 L820 90 L880 130"/>
+              <path d="M780 150 L740 110"/>
+            </g>
+            <!-- Felsen -->
+            <ellipse cx="395" cy="120" rx="60" ry="26" fill="#8d7b6a"/>
+            <ellipse cx="430" cy="108" rx="34" ry="16" fill="#a6927e"/>
+            <!-- Seegras unten links -->
+            <g stroke="#2e8b57" stroke-width="7" stroke-linecap="round" opacity="0.75" fill="none">
+              <path d="M150 640 Q140 580 158 540"/>
+              <path d="M185 640 Q195 575 178 530"/>
+              <path d="M220 640 Q210 585 228 545"/>
+              <path d="M120 640 Q112 595 126 560"/>
+            </g>
+            <!-- Wintereis rechts unten (größer) -->
+            <path d="M1000 640 L1000 400 Q900 420 820 470 Q720 530 690 640 Z" fill="#dcf0fa"/>
+            <path d="M1000 640 L1000 460 Q920 478 860 520 Q790 570 770 640 Z" fill="#f2fbff"/>
+            <path d="M1000 640 L1000 520 Q940 535 900 575 Q875 600 865 640 Z" fill="#ffffff"/>
+            <g stroke="#b9d7e6" stroke-width="2.5" opacity="0.7" fill="none">
+              <path d="M860 470 L900 520 L860 560"/>
+              <path d="M940 500 L910 560"/>
+            </g>
+            <!-- Wellen-Deko -->
+            <g stroke="#ffffff" stroke-width="3" stroke-linecap="round" opacity="0.35" fill="none">
+              <path d="M340 250 q20 -12 40 0 q20 12 40 0"/>
+              <path d="M600 180 q20 -12 40 0 q20 12 40 0"/>
+              <path d="M520 420 q20 -12 40 0 q20 12 40 0"/>
+              <path d="M250 360 q20 -12 40 0 q20 12 40 0"/>
+              <path d="M760 300 q20 -12 40 0 q20 12 40 0"/>
+            </g>
+          </svg>
+          <div class="ambient fish-a" aria-hidden="true">🐟</div>
+          <div class="ambient fish-b" aria-hidden="true">🐠</div>
+          <div class="ambient turtle" aria-hidden="true">🐢</div>
+          <div class="ambient bird" aria-hidden="true">🕊️</div>
+          <div class="current-arrow ca-1" aria-hidden="true">≫</div>
+          <div class="current-arrow ca-2" aria-hidden="true">≫</div>
+          <div class="current-arrow ca-3" aria-hidden="true">≫</div>
+          <div id="parkedCar" class="parked-car hidden" aria-hidden="true">🚐</div>
+          <div id="vanMarker" class="van-marker" aria-hidden="true"></div>
+          <div id="questHover" class="quest-hover hidden" aria-hidden="true"></div>
+          <div id="turboTimer" class="turbo-timer hidden" aria-live="polite"></div>
+          <div id="mapToast" class="map-toast hidden" aria-live="polite"></div>
+          <!-- Spot- und Sammel-Buttons werden per JS gesetzt -->
+        </div>
+        <div id="joystick" class="joystick hidden" aria-hidden="true">
+          <div class="joy-base"><div id="joyKnob" class="joy-knob"></div></div>
+        </div>
+        <div id="collectPop" class="collect-pop hidden" aria-hidden="true"><span id="collectPraise" class="collect-praise"></span><img alt=""></div>
+      </div>
+      <div class="map-bar">
+        <p id="mapHint" class="map-hint"></p>
+        <button id="footBtn" class="ghost-button dark hidden" type="button"></button>
+        <button id="resetBtn" class="ghost-button dark" type="button"></button>
+      </div>
+    </main>
+
+    <!-- ====== STATION ====== -->
+    <main id="stationScreen" class="game-layout hidden">
+      <section class="visual-panel">
+        <div class="image-card mystery-mode">
+          <img id="animalImage" src="assets/images/mystery.svg" alt="">
+          <div id="mysteryBadge" class="mystery-badge"></div>
+          <div id="eq" class="eq" aria-hidden="true">
+            <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+        <div id="passStrip" class="pass-strip" aria-label="Forscher-Pass"></div>
+      </section>
+
+      <section class="content-panel" aria-live="polite">
+        <div class="station-row">
+          <div>
+            <p id="zoneLabel" class="zone-label"></p>
+            <h2 id="stationTitle"></h2>
+          </div>
+          <button id="readAloudBtn" class="small-button" type="button"></button>
+        </div>
+
+        <div class="guide-card">
+          <div class="nami-avatar" aria-hidden="true">🚐</div>
+          <p id="narratorText"></p>
+        </div>
+
+        <div class="stepper">
+          <div id="stepListen" class="step active"><span>1</span><em data-i18n="stepListen"></em></div>
+          <div id="stepHint" class="step"><span>2</span><em data-i18n="stepHint"></em></div>
+          <div id="stepAnswer" class="step"><span>3</span><em data-i18n="stepAnswer"></em></div>
+          <div id="stepLearn" class="step"><span>4</span><em data-i18n="stepLearn"></em></div>
+        </div>
+
+        <div class="primary-actions">
+          <button id="playBtn" class="main-button" type="button"></button>
+          <button id="hintBtn" class="secondary-button" type="button" disabled></button>
+        </div>
+
+        <div id="hintBox" class="info-box hidden"></div>
+
+        <div id="questionBox" class="question-box hidden">
+          <p id="questionText"></p>
+          <div id="choices" class="choices"></div>
+        </div>
+
+        <div id="feedbackBox" class="feedback-box hidden"></div>
+
+        <div class="navigation-row">
+          <button id="mapBtn" class="ghost-button dark" type="button"></button>
+          <button id="nextBtn" class="next-button hidden" type="button"></button>
+        </div>
+      </section>
+    </main>
+
+    <!-- ====== TAUCH-QUEST ====== -->
+    <main id="diveScreen" class="dive-screen hidden">
+      <div id="diveScene" class="dive-scene surface">
+        <!-- Echtes Unterwasser-Panorama (gestitcht): scrollt nach rechts -->
+        <div id="divePanoBg" class="dive-pano-bg" aria-hidden="true"></div>
+        <div class="dive-caustics" aria-hidden="true"></div>
+        <div class="dive-godrays" aria-hidden="true"></div>
+        <div class="dive-particles" aria-hidden="true"></div>
+        <div class="dive-bubbles" aria-hidden="true"></div>
+        <div id="diveBoat" class="dive-boat" aria-hidden="true">🚤</div>
+        <div class="dive-goggles" aria-hidden="true"></div>
+        <div class="dive-look-hint" aria-hidden="true">↻</div>
+        <div id="diveCompass" class="dive-compass" aria-hidden="true"><span></span></div>
+      </div>
+      <section class="dive-panel" aria-live="polite">
+        <p id="diveNarrator" class="dive-narrator"></p>
+        <button id="diveActionBtn" class="main-button" type="button"></button>
+        <div id="diveQuestionBox" class="question-box hidden">
+          <p id="diveQuestionText"></p>
+          <div id="diveChoices" class="choices"></div>
+        </div>
+        <div id="diveFeedback" class="feedback-box hidden"></div>
+      </section>
+    </main>
+
+    <!-- ====== URKUNDE ====== -->
+    <main id="certScreen" class="cert-screen hidden">
+      <div class="cert-card" id="certCard">
+        <img class="cert-logo" src="assets/brand/proocean_logo.png" alt="Pro Ocean">
+        <p class="eyebrow" data-i18n="certEyebrow"></p>
+        <h2 id="certTitle"></h2>
+        <p id="certName" class="cert-name"></p>
+        <p id="certText" class="cert-text"></p>
+        <div id="certCards" class="cert-cards"></div>
+        <p id="certScore" class="cert-score"></p>
+        <div id="certStats" class="cert-stats"></div>
+        <div id="certHighlights" class="cert-highlights"></div>
+        <p id="certDate" class="cert-date"></p>
+      </div>
+      <div class="cert-actions no-print">
+        <button id="printBtn" class="main-button" type="button"></button>
+        <button id="certMapBtn" class="ghost-button dark" type="button"></button>
+        <button id="certRestartBtn" class="next-button" type="button"></button>
+      </div>
+      <div class="cert-mail no-print">
+        <p id="mailHeading" class="mail-heading"></p>
+        <div class="mail-row">
+          <input id="mailInput" class="name-input mail-input" type="email" autocomplete="off">
+        </div>
+        <label class="mail-consent">
+          <input id="consentCert" type="checkbox">
+          <span id="consentCertText"></span>
+        </label>
+        <label class="mail-consent">
+          <input id="consentNews" type="checkbox">
+          <span id="consentNewsText"></span>
+        </label>
+        <button id="mailBtn" class="ghost-button dark" type="button" disabled></button>
+        <p id="mailNote" class="mail-note"></p>
+      </div>
+    </main>
+  </div>
+
+  <!-- ====== START ====== -->
+  <div id="startOverlay" class="start-overlay">
+    <div class="start-card">
+      <div class="start-logo-line">
+        <img src="assets/brand/proocean_logo.png" alt="Pro Ocean">
+        <span data-i18n="eyebrow"></span>
+        <div class="lang-pick">
+          <button id="langDe" class="lang-button active" type="button">🇩🇪 Deutsch</button>
+          <button id="langEn" class="lang-button" type="button">🇬🇧 English</button>
+        </div>
+      </div>
+      <div class="start-hero-grid">
+        <div class="start-hero-visual">
+          <img class="start-route" src="assets/brand/ocean_van_route.png" alt="">
+          <span class="sound-ring ring-one"></span>
+          <span class="sound-ring ring-two"></span>
+          <span class="sound-ring ring-three"></span>
+        </div>
+        <div class="start-copy">
+          <h2 data-i18n="title"></h2>
+          <p class="start-catcher" data-i18n="startCatcher"></p>
+          <p class="start-lead" data-i18n="startLead"></p>
+          <label class="name-label" for="nameInput"><span data-i18n="nameLabel"></span></label>
+          <input id="nameInput" class="name-input" type="text" maxlength="24" autocomplete="off">
+          <div class="mode-pick">
+            <button id="modeKid" class="mode-button active" type="button">
+              <strong data-i18n="modeKid"></strong><small data-i18n="modeKidSub"></small>
+            </button>
+            <button id="modePro" class="mode-button" type="button">
+              <strong data-i18n="modePro"></strong><small data-i18n="modeProSub"></small>
+            </button>
+          </div>
+          <button id="startBtn" class="start-button" type="button"></button>
+          <button id="startWindowBtn" class="plain-button" type="button"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="oceanCueOverlay" class="ocean-cue-overlay hidden" aria-live="assertive">
+    <div id="oceanCueText" class="ocean-cue-text"></div>
+  </div>
+
+  <div id="missionOverlay" class="mission-overlay hidden" role="dialog" aria-modal="true">
+    <div class="mission-card">
+      <div class="mission-icon" aria-hidden="true">🚐 🛍️ ♻️</div>
+      <h3 id="missionTitle"></h3>
+      <p id="missionText"></p>
+      <button id="missionOkBtn" class="start-button" type="button"></button>
+      <button id="missionCancelBtn" class="plain-button hidden" type="button"></button>
+    </div>
+  </div>
+
+  <audio id="animalAudio" preload="auto"></audio>
+  <script src="app.js?v=18"></script>
+</body>
+</html>

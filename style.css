@@ -1,0 +1,1587 @@
+/* Deine Ocean Van Klangreise – Pro Ocean – v10 */
+:root {
+  /* Pro-Ocean-Logo-Blau + maritime Töne */
+  --deep: #0b3556;
+  --ocean: #1d6fb8;
+  --ocean-2: #2aa6d8;
+  --lagoon: #54d2c6;
+  --sand: #f4d58d;
+  --foam: #f4fffc;
+  --ink: #12333d;
+  --muted: #5d747b;
+  --card: rgba(255,255,255,0.97);
+  --line: rgba(29,111,184,0.18);
+  --shadow: 0 18px 44px rgba(5,39,52,0.16);
+  --radius: 20px;
+  /* SDG-Regenbogen aus dem Pro-Ocean-Logo */
+  --sdg: linear-gradient(90deg, #e5243b, #dda63a, #4c9f38, #26bde2, #fcc30b, #fd6925, #dd1367, #0a97d9, #56c02b, #00689d);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--ink);
+  background: linear-gradient(135deg, #0b3f66 0%, #1d6fb8 55%, #50c9c3 100%);
+  /* Browser-Wischgesten (Zurück/Vorwärts/Tab-Wechsel, Pull-to-Refresh) verhindern */
+  overscroll-behavior: none;
+  touch-action: manipulation;
+}
+
+button { font: inherit; border: 0; cursor: pointer; }
+button:disabled { cursor: not-allowed; opacity: 0.48; }
+.hidden { display: none !important; }
+
+.app-shell {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: 14px;
+  gap: 12px;
+}
+/* SDG-Regenbogen-Akzent wie im Pro-Ocean-Logo */
+.app-shell::before {
+  content: "";
+  height: 5px;
+  border-radius: 999px;
+  background: var(--sdg);
+  opacity: 0.9;
+}
+
+/* ---------- Kopfzeile ---------- */
+.topbar {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  color: #fff;
+  flex-wrap: wrap;
+}
+.brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.brand-logo-card {
+  width: 52px; height: 52px;
+  flex: 0 0 auto;
+  border-radius: 14px;
+  display: grid; place-items: center;
+  background: rgba(255,255,255,0.92);
+  padding: 6px;
+}
+.brand-logo { width: 100%; height: 100%; object-fit: contain; }
+.eyebrow {
+  margin: 0 0 3px;
+  text-transform: uppercase;
+  letter-spacing: .09em;
+  font-size: .72rem;
+  font-weight: 850;
+  color: rgba(255,255,255,.84);
+}
+.brand h1 { margin: 0; font-size: clamp(1.1rem, 2.4vw, 1.9rem); line-height: 1.05; }
+.top-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+.progress-pill, .ghost-button, .small-button {
+  border-radius: 999px;
+  padding: 9px 14px;
+  background: rgba(255,255,255,0.18);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.38);
+  font-weight: 800;
+  font-size: 0.92rem;
+}
+.ghost-button:hover, .small-button:hover { background: rgba(255,255,255,0.3); }
+.ghost-button.dark { color: var(--ocean); background: #ecfbfb; border-color: var(--line); }
+.score-pill { background: rgba(244,213,141,0.92); color: #55400a; border-color: rgba(244,213,141,0.6); }
+
+/* ---------- Karte ---------- */
+.map-screen {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.map-frame {
+  flex: 1 1 auto;
+  min-height: 0;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.42);
+  box-shadow: var(--shadow);
+  position: relative;
+}
+.map-canvas { position: absolute; inset: 0; touch-action: none; cursor: crosshair; }
+.map-bg { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+.van-marker {
+  position: absolute;
+  transform: translate(-50%, -60%);
+  filter: drop-shadow(0 6px 8px rgba(0,0,0,0.35));
+  z-index: 5;
+  pointer-events: none;
+}
+.van-inner {
+  display: grid;
+  place-items: center;
+  position: relative;
+  transition: transform 0.18s ease;
+}
+.van-emoji {
+  font-size: clamp(1.9rem, 4.2vw, 3rem);
+  line-height: 1;
+  position: relative;
+  z-index: 2;
+}
+/* Boot erscheint, sobald der Van aufs Wasser fährt */
+.boat {
+  display: none;
+  position: absolute;
+  bottom: -0.42em;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1.85em;
+  height: 0.62em;
+  font-size: clamp(1.9rem, 4.2vw, 3rem);
+  background: linear-gradient(180deg, var(--ocean), #14507e);
+  border-radius: 0 0 1em 1em;
+  border-top: 3px solid #f4d58d;
+  z-index: 1;
+}
+.van-marker.on-water .boat { display: block; }
+.van-marker.on-water .van-emoji { transform: translateY(-0.18em) scale(0.88); }
+.van-marker.driving .van-inner > * { animation: vanbob 0.45s ease-in-out infinite alternate; }
+@keyframes vanbob {
+  from { margin-top: 0; }
+  to   { margin-top: -5px; }
+}
+
+/* Bugwellen */
+.wake {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.75);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 3;
+  animation: wakefade 0.9s ease-out forwards;
+}
+@keyframes wakefade {
+  from { opacity: 0.8; transform: translate(-50%, -50%) scale(0.5); }
+  to   { opacity: 0; transform: translate(-50%, -50%) scale(2.4); }
+}
+
+/* Einsammelbare Dinge: Müll, Muscheln, Anker */
+.pickup {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  background: none;
+  border: 0;
+  font-size: clamp(1.15rem, 2.6vw, 1.7rem);
+  z-index: 3;
+  padding: 6px;
+  filter: drop-shadow(0 3px 4px rgba(0,0,0,0.3));
+  animation: pickupbob 1.6s ease-in-out infinite alternate;
+  -webkit-tap-highlight-color: transparent;
+}
+@keyframes pickupbob {
+  from { margin-top: 0; }
+  to   { margin-top: -5px; }
+}
+.pickup-shell { font-size: clamp(1rem, 2.2vw, 1.4rem); }
+.pickup-heavy {
+  font-size: clamp(1.6rem, 3.4vw, 2.3rem);
+  background: rgba(231,111,81,0.18);
+  border-radius: 50%;
+  border: 2px dashed rgba(231,111,81,0.7);
+}
+.pickup-anchor {
+  font-size: clamp(1.5rem, 3.2vw, 2.2rem);
+  background: rgba(255,255,255,0.92);
+  border-radius: 50%;
+  border: 3px solid var(--ocean);
+  width: clamp(46px, 7vw, 62px);
+  height: clamp(46px, 7vw, 62px);
+  display: grid;
+  place-items: center;
+  animation: spotpulse 1.8s ease-in-out infinite;
+}
+
+/* ♻️ Pro Ocean Recycling – als Gebäude mit Schild */
+.rec-station {
+  background: none;
+  border: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: clamp(76px, 13vw, 116px);
+  animation: none;
+}
+.rec-building {
+  position: relative;
+  width: clamp(58px, 10vw, 88px);
+  height: clamp(46px, 8vw, 70px);
+  display: block;
+  filter: drop-shadow(0 6px 10px rgba(5,39,52,0.35));
+}
+.rec-roof {
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 0; height: 0;
+  border-left: clamp(31px, 5.3vw, 46px) solid transparent;
+  border-right: clamp(31px, 5.3vw, 46px) solid transparent;
+  border-bottom: clamp(16px, 2.7vw, 24px) solid #1d6fb8;
+}
+.rec-body {
+  position: absolute;
+  bottom: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 70%;
+  border-radius: 8px 8px 6px 6px;
+  background: linear-gradient(180deg, #f4fbff 0%, #d7ecf7 100%);
+  border: 2px solid #1d6fb8;
+  display: grid;
+  place-items: center;
+  overflow: visible;
+}
+.rec-logo { font-size: clamp(1.1rem, 2.3vw, 1.7rem); }
+.rec-chimney {
+  position: absolute;
+  top: -22%;
+  width: 18%;
+  height: 30%;
+  background: #b9d7e6;
+  border: 2px solid #1d6fb8;
+  border-radius: 3px 3px 0 0;
+}
+.rec-chimney.c1 { left: 12%; }
+.rec-chimney.c2 { left: 70%; height: 24%; top: -16%; }
+.rec-chimney::after {
+  content: "";
+  position: absolute;
+  top: -10px; left: 50%;
+  width: 9px; height: 9px;
+  margin-left: -4px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.7);
+  animation: smoke 2.4s ease-out infinite;
+}
+@keyframes smoke {
+  from { transform: translateY(0) scale(0.6); opacity: 0.7; }
+  to   { transform: translateY(-14px) scale(1.4); opacity: 0; }
+}
+.rec-label {
+  margin-top: 3px;
+  font-size: clamp(0.55rem, 1.4vw, 0.74rem);
+  font-weight: 900;
+  color: #0b3556;
+  background: #fff;
+  border: 2px solid #1d6fb8;
+  border-radius: 999px;
+  padding: 2px 8px;
+  white-space: nowrap;
+  box-shadow: 0 3px 7px rgba(5,39,52,0.25);
+}
+
+/* Fischernetz: großes, ausgedehntes Hindernis */
+.pickup.net {
+  /* Größe skaliert mit Karten-% (--net-r): grob 2*r% der Kartenbreite */
+  width: calc(var(--net-r, 8) * 1.9%);
+  height: calc(var(--net-r, 8) * 1.9%);
+  min-width: 64px;
+  min-height: 64px;
+  background: none;
+  border: 0;
+  padding: 0;
+  z-index: 2;
+}
+.net-mesh {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    repeating-linear-gradient(45deg, rgba(255,255,255,0.5) 0 2px, transparent 2px 9px),
+    repeating-linear-gradient(-45deg, rgba(255,255,255,0.5) 0 2px, transparent 2px 9px);
+  border: 2px dashed rgba(255,255,255,0.7);
+  animation: netsway 3s ease-in-out infinite alternate;
+}
+.net-fish {
+  position: absolute;
+  top: 38%; left: 42%;
+  font-size: 1.1rem;
+  animation: netwiggle 1.4s ease-in-out infinite alternate;
+}
+@keyframes netsway { from { transform: rotate(-3deg); } to { transform: rotate(3deg); } }
+@keyframes netwiggle { from { transform: translateX(-2px) rotate(-8deg); } to { transform: translateX(2px) rotate(8deg); } }
+.van-marker.in-net .van-inner { animation: tangle 0.5s ease-in-out infinite alternate; }
+@keyframes tangle { from { transform: rotate(-6deg); } to { transform: rotate(6deg); } }
+
+/* Müll-Ladung: Boot liegt tiefer im Wasser, Zähler am Marker */
+.cargo-badge {
+  position: absolute;
+  top: -0.9em;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.78rem;
+  font-weight: 900;
+  background: rgba(255,255,255,0.95);
+  color: #7a3d12;
+  border-radius: 999px;
+  padding: 1px 7px;
+  border: 2px solid #e09f3e;
+  white-space: nowrap;
+}
+.van-marker.cargo-heavy .van-inner { margin-top: 0.18em; }
+.van-marker.cargo-full .van-inner { margin-top: 0.34em; }
+.van-marker.cargo-full .van-emoji { filter: saturate(0.8); }
+.van-marker.cargo-full .cargo-badge { background: #fdeaea; border-color: #e76f51; color: #93331c; animation: pickupbob 0.8s ease-in-out infinite alternate; }
+
+/* Karten-Nachricht */
+.map-toast {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: min(560px, 86%);
+  background: rgba(7,53,86,0.92);
+  color: #fff;
+  font-weight: 800;
+  font-size: clamp(0.85rem, 1.7vw, 1.05rem);
+  line-height: 1.3;
+  padding: 10px 18px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.3);
+  z-index: 8;
+  text-align: center;
+  animation: cuepop 0.3s ease both;
+  pointer-events: none;
+}
+
+/* Meeresströmung */
+.current-arrow {
+  position: absolute;
+  color: rgba(255,255,255,0.6);
+  font-size: clamp(1.2rem, 2.6vw, 1.9rem);
+  font-weight: 900;
+  pointer-events: none;
+  z-index: 2;
+  animation: currentdrift 5s linear infinite;
+}
+.ca-1 { top: 42%; animation-delay: 0s; }
+.ca-2 { top: 46%; animation-delay: -1.7s; }
+.ca-3 { top: 50%; animation-delay: -3.4s; }
+@keyframes currentdrift {
+  from { left: 40%; opacity: 0; }
+  15%  { opacity: 0.8; }
+  85%  { opacity: 0.8; }
+  to   { left: 78%; opacity: 0; }
+}
+
+/* Eisbrecher-Bug + Ruder-Anzeige */
+.van-marker.icebreaker .boat::after {
+  content: "❄️";
+  position: absolute;
+  right: -0.28em;
+  top: -0.55em;
+  font-size: 0.45em;
+}
+.van-marker.rowing .van-inner::after {
+  content: "🚣";
+  position: absolute;
+  left: -0.85em;
+  bottom: -0.1em;
+  font-size: 0.55em;
+}
+/* Eisbrecher bricht sichtbar durchs Packeis */
+.van-marker.breaking-ice .boat {
+  background: linear-gradient(180deg, #eaf6ff, #b9d7e6) !important;
+  border-top-color: #cfe8f5 !important;
+}
+.van-marker.breaking-ice::before {
+  content: "";
+  position: absolute;
+  left: 50%; top: 56%;
+  width: 2.6em; height: 1.6em;
+  transform: translate(-50%, -50%);
+  background:
+    repeating-linear-gradient(70deg, rgba(255,255,255,0.95) 0 2px, transparent 2px 8px),
+    repeating-linear-gradient(110deg, rgba(255,255,255,0.9) 0 2px, transparent 2px 8px);
+  -webkit-mask: radial-gradient(closest-side, #000 70%, transparent);
+          mask: radial-gradient(closest-side, #000 70%, transparent);
+  z-index: 0;
+  pointer-events: none;
+}
+/* Eis spritzt links UND rechts neben dem Boot hoch */
+.van-marker.breaking-ice .van-inner::before {
+  content: "❄️";
+  position: absolute;
+  right: -0.75em; top: 0.1em;
+  font-size: 0.5em;
+  animation: iceflingR 0.55s linear infinite;
+}
+.van-marker.breaking-ice .van-inner::after {
+  content: "❄️";
+  position: absolute;
+  left: -0.75em; top: 0.1em;
+  font-size: 0.5em;
+  animation: iceflingL 0.55s linear infinite;
+}
+@keyframes iceflingR {
+  from { transform: translate(0,0) rotate(0); opacity: 0.95; }
+  to   { transform: translate(0.8em, -0.6em) rotate(140deg); opacity: 0; }
+}
+@keyframes iceflingL {
+  from { transform: translate(0,0) rotate(0); opacity: 0.95; }
+  to   { transform: translate(-0.8em, -0.6em) rotate(-140deg); opacity: 0; }
+}
+
+/* Turbo-Endmodus: Boot glüht/zischt */
+.van-marker.turbo .van-inner { filter: drop-shadow(0 0 10px rgba(255,180,40,0.9)); }
+.van-marker.turbo .boat { border-top-color: #ffb400 !important; }
+
+/* Schwimmende Karten-Bewohner */
+.ambient {
+  position: absolute;
+  font-size: clamp(1rem, 2.2vw, 1.5rem);
+  opacity: 0.85;
+  pointer-events: none;
+  z-index: 2;
+}
+.fish-a { top: 46%; animation: swim-right 26s linear infinite; }
+.fish-b { top: 30%; animation: swim-left 34s linear infinite; animation-delay: -12s; }
+.turtle { top: 72%; animation: swim-right 48s linear infinite; animation-delay: -20s; }
+.bird   { top: 8%;  animation: swim-left 30s linear infinite; animation-delay: -6s; }
+@keyframes swim-right {
+  from { left: -5%; transform: scaleX(1); }
+  to   { left: 105%; transform: scaleX(1); }
+}
+@keyframes swim-left {
+  from { left: 105%; transform: scaleX(-1); }
+  to   { left: -5%; transform: scaleX(-1); }
+}
+
+.spot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: none;
+  z-index: 4;
+  padding: 6px;
+  -webkit-tap-highlight-color: transparent;
+}
+.spot-icon {
+  display: grid; place-items: center;
+  width: clamp(44px, 7vw, 60px);
+  height: clamp(44px, 7vw, 60px);
+  border-radius: 50%;
+  background: rgba(255,255,255,0.96);
+  border: 3px solid var(--ocean);
+  font-size: clamp(1.3rem, 2.8vw, 1.8rem);
+  box-shadow: 0 8px 18px rgba(5,39,52,0.3);
+  transition: transform 0.15s ease;
+}
+.spot:hover .spot-icon { transform: scale(1.12); }
+.spot:not(.solved) .spot-icon { animation: spotpulse 1.8s ease-in-out infinite; }
+@keyframes spotpulse {
+  0%, 100% { box-shadow: 0 8px 18px rgba(5,39,52,0.3), 0 0 0 0 rgba(255,255,255,0.55); }
+  55% { box-shadow: 0 8px 18px rgba(5,39,52,0.3), 0 0 0 14px rgba(255,255,255,0); }
+}
+.spot.solved .spot-icon { border-color: #43aa8b; background: #e8f6e6; animation: none; }
+.spot.finale-spot .spot-icon { border-color: #d9a40b; background: #fff6dd; }
+.spot-name {
+  font-size: clamp(0.62rem, 1.4vw, 0.8rem);
+  font-weight: 900;
+  color: #fff;
+  background: rgba(7,55,71,0.78);
+  border-radius: 999px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+
+/* Touch-Joystick */
+.joystick {
+  position: absolute;
+  left: 14px;
+  bottom: 14px;
+  width: clamp(96px, 26vw, 140px);
+  height: clamp(96px, 26vw, 140px);
+  z-index: 9;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.joy-base {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 40%, rgba(255,255,255,0.42), rgba(255,255,255,0.16));
+  border: 2px solid rgba(255,255,255,0.6);
+  box-shadow: 0 6px 18px rgba(5,39,52,0.3);
+  backdrop-filter: blur(2px);
+}
+.joy-base::before {
+  content: "✛";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: rgba(255,255,255,0.55);
+  font-size: 1.6rem;
+  pointer-events: none;
+}
+.joy-knob {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 42%;
+  height: 42%;
+  margin: -21% 0 0 -21%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 38%, #fff, var(--ocean-2));
+  border: 2px solid rgba(255,255,255,0.85);
+  box-shadow: 0 4px 12px rgba(5,39,52,0.4);
+  transition: transform 0.05s linear;
+  pointer-events: none;
+}
+
+.map-bar {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.map-hint {
+  margin: 0;
+  color: #fff;
+  font-weight: 800;
+  font-size: clamp(0.95rem, 1.6vw, 1.15rem);
+  text-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+
+/* ---------- Station ---------- */
+.game-layout {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(280px, 0.82fr) minmax(380px, 1.18fr);
+  gap: 14px;
+}
+.visual-panel, .content-panel {
+  min-height: 0;
+  border-radius: var(--radius);
+  background: var(--card);
+  border: 1px solid rgba(255,255,255,.42);
+  box-shadow: var(--shadow);
+}
+.visual-panel {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.82), rgba(224,248,250,0.92));
+}
+.image-card {
+  position: relative;
+  width: min(96%, 640px);
+  aspect-ratio: 4 / 3;
+  display: grid;
+  place-items: center;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #e7f6f8;
+  border: 1px solid rgba(0,107,143,.16);
+}
+.image-card.revealed { animation: pop .28s ease both; }
+@keyframes pop { from { transform: scale(0.94); opacity: 0.4; } to { transform: scale(1); opacity: 1; } }
+.image-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.image-card.mystery-mode img, .image-card.contain-mode img { object-fit: contain; padding: 16px; }
+.image-card.photo-mode img { padding: 0; }
+.image-card.contain-mode { background: #f8fffd; }
+.mystery-badge {
+  position: absolute;
+  top: 12px; right: 12px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(244,213,141,.96);
+  color: #55400a;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  font-size: .72rem;
+  z-index: 3;
+}
+
+/* Sound-Visualisierung */
+.eq {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 56px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 18px 10px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  background: linear-gradient(0deg, rgba(7,55,71,0.45), transparent);
+  z-index: 2;
+}
+.eq.playing { opacity: 1; }
+.eq span {
+  width: 8px;
+  height: 12px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, var(--lagoon), var(--ocean-2));
+}
+.eq.playing span { animation: eqbounce 0.9s ease-in-out infinite; }
+.eq span:nth-child(1) { animation-delay: 0s; }
+.eq span:nth-child(2) { animation-delay: 0.15s; }
+.eq span:nth-child(3) { animation-delay: 0.3s; }
+.eq span:nth-child(4) { animation-delay: 0.05s; }
+.eq span:nth-child(5) { animation-delay: 0.25s; }
+.eq span:nth-child(6) { animation-delay: 0.1s; }
+.eq span:nth-child(7) { animation-delay: 0.35s; }
+.eq span:nth-child(8) { animation-delay: 0.2s; }
+.eq span:nth-child(9) { animation-delay: 0.4s; }
+@keyframes eqbounce {
+  0%, 100% { height: 10px; }
+  50% { height: 44px; }
+}
+
+/* Forscher-Pass */
+.pass-strip {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.pass-card {
+  width: 52px;
+  text-align: center;
+  font-size: 0.58rem;
+  font-weight: 800;
+  color: var(--muted);
+}
+.pass-card img {
+  width: 44px; height: 44px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #43aa8b;
+  display: block;
+  margin: 0 auto 2px;
+  background: #e7f6f8;
+}
+.pass-card span { display: block; line-height: 1.1; color: #275042; }
+.pass-q {
+  width: 44px; height: 44px;
+  margin: 0 auto;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  background: #edf6f7;
+  border: 2px dashed var(--line);
+  color: var(--muted);
+  font-size: 1.1rem;
+  font-weight: 900;
+}
+
+.content-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+.station-row { display: flex; justify-content: space-between; gap: 14px; align-items: flex-start; }
+.zone-label {
+  margin: 0 0 4px;
+  color: var(--ocean);
+  font-weight: 900;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  font-size: .76rem;
+}
+h2 { margin: 0; font-size: clamp(1.3rem, 2.5vw, 2.1rem); line-height: 1.08; color: var(--deep); }
+.small-button { color: var(--ocean); background: #ecfbfb; border-color: var(--line); white-space: nowrap; }
+
+.guide-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  align-items: center;
+  background: #eef9f8;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 13px;
+}
+.nami-avatar { width: 46px; height: 46px; display: grid; place-items: center; background: #fff; border-radius: 50%; font-size: 1.75rem; }
+.guide-card p { margin: 0; font-size: clamp(1rem, 1.45vw, 1.15rem); line-height: 1.38; }
+
+.stepper { display: grid; grid-template-columns: repeat(4,1fr); gap: 7px; }
+.step {
+  border-radius: 12px;
+  padding: 8px 4px;
+  text-align: center;
+  font-weight: 850;
+  color: var(--muted);
+  background: #edf6f7;
+  border: 2px solid transparent;
+  font-size: .85rem;
+}
+.step em { font-style: normal; }
+.step span {
+  display: inline-grid;
+  place-items: center;
+  width: 22px; height: 22px;
+  margin-right: 3px;
+  border-radius: 50%;
+  background: #fff;
+}
+.step.active { color: var(--deep); background: #ddf8f3; border-color: var(--lagoon); }
+.step.done { color: #275042; background: #e8f6e6; }
+
+.primary-actions, .navigation-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.navigation-row { margin-top: auto; padding-top: 4px; }
+.main-button, .secondary-button, .next-button, .start-button {
+  min-height: 54px;
+  padding: 14px 20px;
+  border-radius: 16px;
+  font-weight: 900;
+  font-size: clamp(1rem, 1.5vw, 1.12rem);
+  box-shadow: 0 10px 22px rgba(6,57,74,0.13);
+}
+.main-button, .start-button { color: #fff; background: linear-gradient(135deg, var(--ocean), var(--ocean-2)); }
+.secondary-button { color: #573e00; background: linear-gradient(135deg, var(--sand), #ffe8ae); }
+.next-button { color: #fff; background: linear-gradient(135deg, #237a63, #43aa8b); }
+.main-button:hover, .secondary-button:hover, .next-button:hover, .start-button:hover { transform: translateY(-1px); }
+
+.info-box, .question-box, .feedback-box {
+  border-radius: 16px;
+  padding: 14px;
+  background: #f9fefd;
+  border: 1px solid var(--line);
+}
+.info-box { border-left: 7px solid var(--sand); font-size: 1.04rem; line-height: 1.38; }
+.question-box p { margin: 0 0 10px; font-weight: 900; font-size: 1.12rem; }
+.choices { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
+.choice-button {
+  min-height: 56px;
+  border-radius: 14px;
+  padding: 10px;
+  background: #fff;
+  border: 2px solid var(--line);
+  font-weight: 850;
+  font-size: 1rem;
+  transition: transform 0.12s ease, border-color 0.12s ease;
+}
+.choice-button:hover { transform: translateY(-1px); border-color: var(--ocean-2); }
+.choice-button.correct { background: #e3f8e2; border-color: #43aa8b; color: #1d5c43; }
+.choice-button.wrong { background: #fdeaea; border-color: #e76f51; color: #93331c; }
+
+.feedback-box h3 { margin: 0 0 8px; color: var(--deep); font-size: 1.25rem; }
+.shell-line {
+  margin: 0 0 10px;
+  display: inline-block;
+  background: rgba(244,213,141,0.5);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-weight: 900;
+  color: #55400a;
+}
+.fact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.fact-card {
+  border-radius: 13px;
+  padding: 11px;
+  background: #effaf7;
+  border: 1px solid var(--line);
+}
+.fact-card strong { display: block; margin-bottom: 4px; color: var(--ocean); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.fact-card p { margin: 0; line-height: 1.36; font-size: 0.98rem; }
+
+/* ---------- Start-Overlay ---------- */
+.start-overlay {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 14px;
+  background: linear-gradient(135deg, rgba(4,38,53,0.88), rgba(0,90,114,0.86));
+  z-index: 50;
+  overflow-y: auto;
+}
+.start-card {
+  width: min(980px, 100%);
+  max-height: calc(100dvh - 28px);
+  overflow-y: auto;
+  background: var(--card);
+  border-radius: 24px;
+  box-shadow: var(--shadow);
+  padding: clamp(16px, 3vw, 30px);
+}
+.start-logo-line {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.start-logo-line img { height: 44px; }
+.start-logo-line span {
+  font-weight: 900;
+  color: var(--ocean);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-size: 0.8rem;
+}
+.lang-pick { margin-left: auto; display: flex; gap: 6px; }
+.lang-button {
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-weight: 800;
+  background: #edf6f7;
+  border: 2px solid transparent;
+  color: var(--muted);
+}
+.lang-button.active { background: #ddf8f3; border-color: var(--lagoon); color: var(--deep); }
+
+.start-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.9fr) 1.1fr;
+  gap: clamp(14px, 3vw, 26px);
+  align-items: center;
+}
+.start-hero-visual {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 8px;
+}
+.start-route { width: 100%; border-radius: 18px; }
+.sound-ring {
+  position: absolute;
+  border: 3px solid rgba(10,167,189,0.5);
+  border-radius: 50%;
+  animation: ring 2.6s ease-out infinite;
+}
+.ring-one { width: 70px; height: 70px; }
+.ring-two { width: 70px; height: 70px; animation-delay: 0.8s; }
+.ring-three { width: 70px; height: 70px; animation-delay: 1.6s; }
+@keyframes ring {
+  from { transform: scale(0.6); opacity: 0.9; }
+  to { transform: scale(2.4); opacity: 0; }
+}
+.start-copy h2 { font-size: clamp(1.5rem, 3vw, 2.3rem); margin-bottom: 6px; }
+.start-catcher { margin: 0 0 6px; font-weight: 850; color: var(--ocean); font-size: 1.05rem; }
+.start-lead { margin: 0 0 12px; line-height: 1.45; }
+
+.name-label { display: block; font-weight: 800; font-size: 0.9rem; margin-bottom: 4px; color: var(--deep); }
+.name-input {
+  width: 100%;
+  border-radius: 12px;
+  border: 2px solid var(--line);
+  padding: 11px 14px;
+  font: inherit;
+  margin-bottom: 12px;
+  background: #fff;
+}
+.name-input:focus { outline: none; border-color: var(--ocean-2); }
+
+.mode-pick { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+.mode-button {
+  border-radius: 14px;
+  padding: 11px 10px;
+  background: #edf6f7;
+  border: 2px solid transparent;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.mode-button strong { font-size: 0.98rem; color: var(--deep); }
+.mode-button small { color: var(--muted); font-weight: 700; }
+.mode-button.active { background: #ddf8f3; border-color: var(--lagoon); }
+
+.start-button { width: 100%; margin-bottom: 8px; }
+.plain-button {
+  width: 100%;
+  background: none;
+  color: var(--ocean);
+  font-weight: 800;
+  padding: 8px;
+  text-decoration: underline;
+}
+
+/* ---------- Mission-Popup ---------- */
+.mission-overlay {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(4,38,53,0.72);
+  z-index: 65;
+  overflow-y: auto;            /* falls die Karte höher als der Bildschirm ist */
+}
+.mission-card {
+  width: min(480px, 100%);
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;            /* OK-Button bleibt immer erreichbar */
+  background: var(--card);
+  border-radius: 22px;
+  box-shadow: var(--shadow);
+  padding: clamp(18px, 4vw, 28px);
+  text-align: center;
+  animation: cuepop 0.35s ease both;
+  border-top: 7px solid transparent;
+  border-image: linear-gradient(90deg, #e5243b, #dda63a, #4c9f38, #26bde2, #fcc30b, #00689d) 1;
+}
+.mission-icon { font-size: 2.2rem; margin-bottom: 8px; }
+.mission-card h3 { margin: 0 0 10px; color: var(--deep); font-size: clamp(1.25rem, 3vw, 1.6rem); }
+.mission-card p { margin: 0 0 18px; line-height: 1.5; font-size: clamp(0.98rem, 2vw, 1.1rem); }
+.mission-card .start-button { width: 100%; }
+
+/* ---------- Ozean-Cue ---------- */
+.ocean-cue-overlay {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(4,38,53,0.55);
+  z-index: 60;
+  pointer-events: none;
+}
+.ocean-cue-text {
+  max-width: min(640px, 88vw);
+  text-align: center;
+  color: #fff;
+  font-size: clamp(1.4rem, 4vw, 2.4rem);
+  font-weight: 900;
+  text-shadow: 0 4px 18px rgba(0,0,0,0.45);
+  animation: cuepop 0.5s ease both;
+}
+@keyframes cuepop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* ---------- Feier ---------- */
+.celebration-burst {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 70;
+}
+.celebration-burst span {
+  position: absolute;
+  bottom: -40px;
+  font-size: 2rem;
+  animation: rise 2.2s ease-out forwards;
+}
+@keyframes rise {
+  from { transform: translateY(0) rotate(0); opacity: 1; }
+  to { transform: translateY(-105vh) rotate(40deg); opacity: 0; }
+}
+
+/* ---------- Urkunde ---------- */
+.cert-screen {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 10px;
+}
+.cert-card {
+  width: min(760px, 100%);
+  background: #fffdf6;
+  border-radius: 22px;
+  border: 6px double var(--sand);
+  box-shadow: var(--shadow);
+  padding: clamp(18px, 4vw, 38px);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.cert-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 7px;
+  background: var(--sdg);
+}
+.cert-logo { height: 54px; margin-bottom: 8px; }
+.cert-card .eyebrow { color: var(--ocean); }
+.cert-card h2 { font-size: clamp(1.5rem, 3.4vw, 2.3rem); margin-bottom: 14px; }
+.cert-name {
+  font-size: clamp(1.5rem, 3.6vw, 2.2rem);
+  font-weight: 900;
+  color: var(--ocean);
+  margin: 6px 0;
+  border-bottom: 3px solid var(--sand);
+  display: inline-block;
+  padding: 0 18px 4px;
+}
+.cert-text { max-width: 540px; margin: 10px auto 16px; line-height: 1.5; }
+.cert-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.cert-animal { width: 72px; font-size: 0.62rem; font-weight: 800; color: #275042; }
+.cert-animal img {
+  width: 58px; height: 58px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid var(--lagoon);
+  display: block;
+  margin: 0 auto 3px;
+  background: #e7f6f8;
+}
+.cert-score { font-weight: 900; font-size: 1.15rem; color: #55400a; margin: 0 0 6px; }
+.cert-date { color: var(--muted); font-weight: 700; margin: 0; }
+.cert-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+
+/* ---------- Tauch-Quest (First-Person-Panorama, aufgewertet) ---------- */
+.dive-screen {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.dive-scene {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 52dvh;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  background: #042036;
+  touch-action: none;
+  cursor: grab;
+}
+.dive-scene.looking { cursor: ew-resize; }
+
+/* Ferne Hintergrundebene (Riff) – sanfte Eigendrift für Tiefe; hier kann ein Bild rein */
+.dive-pano-bg {
+  position: absolute; inset: 0;
+  z-index: 0;
+  background-position-y: center;
+  transition: background-position-x 0.12s linear;
+}
+
+/* Animierte Lichtkaustik (wabernde Helligkeit am Grund) */
+.dive-caustics {
+  position: absolute; inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.35;
+  mix-blend-mode: screen;
+  background:
+    radial-gradient(120px 60px at 20% 30%, rgba(180,240,255,0.45), transparent 70%),
+    radial-gradient(160px 70px at 55% 20%, rgba(150,230,255,0.40), transparent 70%),
+    radial-gradient(140px 60px at 80% 35%, rgba(180,240,255,0.40), transparent 70%),
+    radial-gradient(120px 50px at 38% 60%, rgba(150,230,255,0.30), transparent 70%);
+  animation: caustics 7s ease-in-out infinite alternate;
+}
+@keyframes caustics {
+  from { transform: translate(-2%, -1%) scale(1); opacity: 0.25; }
+  to   { transform: translate(2%, 1%) scale(1.08); opacity: 0.45; }
+}
+
+/* Panorama-Streifen: zwei identische Hälften -> nahtloses 360°-Umsehen */
+.dive-world {
+  position: absolute; inset: 0;
+  width: 200%;
+  display: flex;
+  z-index: 2;
+  transition: transform 0.1s linear;
+  will-change: transform;
+}
+.pano-half { position: relative; width: 50%; height: 100%; }
+.dive-world .dw {
+  position: absolute;
+  font-size: clamp(1.6rem, 4.5vw, 2.8rem);
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+}
+.dw-coral.big { font-size: clamp(2.4rem, 7vw, 4rem); }
+.dw-whale {
+  font-size: clamp(4rem, 13vw, 7.5rem);
+  filter: drop-shadow(0 0 24px rgba(120,220,255,0.55)) drop-shadow(0 6px 12px rgba(0,0,0,0.5));
+  animation: whalehover 7s ease-in-out infinite alternate;
+}
+.dw-jelly.glow {
+  filter: drop-shadow(0 0 14px rgba(180,130,255,0.9));
+  animation: jellypulse 4s ease-in-out infinite alternate;
+}
+.dw-fish { animation: finwiggle 1.6s ease-in-out infinite alternate; }
+.dw-fish.school { text-shadow: 0.6em 0.2em 0 rgba(255,255,255,0.15), -0.5em 0.3em 0 rgba(255,255,255,0.12), 0.2em -0.4em 0 rgba(255,255,255,0.1); }
+.dw-star { font-size: clamp(1rem,2.6vw,1.6rem); filter: drop-shadow(0 0 8px rgba(255,220,120,0.8)); }
+.dw-octo { animation: jellypulse 5s ease-in-out infinite alternate; }
+.dw-turtle { animation: finwiggle 3s ease-in-out infinite alternate; }
+@keyframes whalehover { from { margin-top: -10px; } to { margin-top: 12px; } }
+@keyframes jellypulse { from { margin-top: -8px; opacity: 0.85; } to { margin-top: 8px; opacity: 1; } }
+@keyframes finwiggle { from { margin-left: -5px; } to { margin-left: 5px; } }
+
+/* God Rays (Lichtstrahlen von oben) */
+.dive-godrays {
+  position: absolute; inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background:
+    linear-gradient(96deg, rgba(190,245,255,0.20) 0 10px, transparent 10px 90px),
+    linear-gradient(84deg, rgba(170,235,255,0.15) 0 8px, transparent 8px 110px),
+    linear-gradient(100deg, rgba(150,225,255,0.12) 0 6px, transparent 6px 130px);
+  mix-blend-mode: screen;
+  animation: rays 9s ease-in-out infinite alternate;
+}
+@keyframes rays { from { transform: translateX(-4%); } to { transform: translateX(4%); } }
+
+/* Plankton/Partikel, die nach oben treiben */
+.dive-particles {
+  position: absolute; inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background-image:
+    radial-gradient(2px 2px at 10% 80%, rgba(255,255,255,0.7), transparent),
+    radial-gradient(2px 2px at 25% 90%, rgba(200,240,255,0.6), transparent),
+    radial-gradient(1.5px 1.5px at 40% 70%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(2px 2px at 55% 85%, rgba(200,240,255,0.6), transparent),
+    radial-gradient(1.5px 1.5px at 70% 75%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(2px 2px at 85% 88%, rgba(200,240,255,0.6), transparent),
+    radial-gradient(1.5px 1.5px at 92% 65%, rgba(255,255,255,0.5), transparent);
+  background-repeat: no-repeat;
+  animation: plankton 12s linear infinite;
+  opacity: 0.8;
+}
+@keyframes plankton { from { background-position: 0 0,0 0,0 0,0 0,0 0,0 0,0 0; } to { background-position: 0 -60dvh,0 -70dvh,0 -50dvh,0 -65dvh,0 -55dvh,0 -75dvh,0 -60dvh; } }
+
+/* Taucherbrillen-Maske (First-Person) */
+.dive-goggles {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  z-index: 6;
+  background: radial-gradient(ellipse 80% 84% at 50% 50%, transparent 58%, rgba(2,18,36,0.55) 80%, rgba(1,12,26,0.95) 100%);
+}
+.dive-goggles::before { content: ""; position: absolute; inset: 0; box-shadow: inset 0 0 70px rgba(120,220,240,0.20); }
+.dive-look-hint {
+  position: absolute; right: 8%; top: 50%;
+  transform: translateY(-50%);
+  font-size: clamp(2rem, 6vw, 3.4rem);
+  color: rgba(255,255,255,0.9);
+  text-shadow: 0 2px 12px rgba(0,0,0,0.6);
+  z-index: 7; opacity: 0; pointer-events: none;
+  animation: lookpulse 1.6s ease-in-out infinite;
+}
+.dive-scene.looking .dive-look-hint { opacity: 1; }
+@keyframes lookpulse {
+  0%,100% { transform: translateY(-50%) translateX(0); opacity: 0.5; }
+  50% { transform: translateY(-50%) translateX(10px); opacity: 1; }
+}
+
+/* aufsteigende Blasen */
+.dive-bubbles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 4; }
+.dive-bubbles::before, .dive-bubbles::after {
+  content: "";
+  position: absolute; bottom: -20px; left: 20%;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.9), rgba(255,255,255,0.25));
+  box-shadow: 60px 40px 0 -2px rgba(255,255,255,0.4), 140px 10px 0 -3px rgba(255,255,255,0.5),
+              220px 60px 0 -1px rgba(255,255,255,0.35), 300px 20px 0 -4px rgba(255,255,255,0.4),
+              -60px 30px 0 -2px rgba(255,255,255,0.4);
+  animation: bubbleup 6s linear infinite;
+}
+.dive-bubbles::after { left: 60%; animation-duration: 8s; animation-delay: -3s; }
+@keyframes bubbleup { from { transform: translateY(0); opacity: 0; } 10% { opacity: 1; } to { transform: translateY(-60dvh); opacity: 0; } }
+
+/* vorbeifahrendes Schiff (über dem Taucher) */
+.dive-boat {
+  position: absolute; top: 5%; left: -15%;
+  font-size: clamp(2.4rem, 7vw, 4rem);
+  transform: scaleX(-1); opacity: 0; z-index: 6;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.6));
+}
+.dive-scene.boat-pass .dive-boat { animation: boatcross 4s linear forwards; }
+@keyframes boatcross {
+  0% { left: -15%; opacity: 0; }
+  12% { opacity: 1; }
+  88% { opacity: 1; }
+  100% { left: 115%; opacity: 0; }
+}
+.dive-scene.shake { animation: diveshake 0.32s linear infinite; }
+@keyframes diveshake {
+  0%,100% { transform: translate(0,0); }
+  25% { transform: translate(-3px, 2px); }
+  50% { transform: translate(3px, -2px); }
+  75% { transform: translate(-2px, -2px); }
+}
+
+/* Kompass */
+.dive-compass {
+  position: absolute; right: 14px; bottom: 14px;
+  width: 56px; height: 56px; border-radius: 50%;
+  background: rgba(7,53,86,0.55);
+  border: 2px solid rgba(255,255,255,0.6);
+  display: grid; place-items: center;
+  opacity: 0.35; transition: opacity 0.3s ease; z-index: 7;
+}
+.dive-compass.active { opacity: 1; }
+.dive-compass span {
+  width: 4px; height: 22px;
+  background: linear-gradient(180deg, #ff5a5a 50%, #fff 50%);
+  border-radius: 2px;
+  transform: rotate(var(--rot, 0deg));
+  transition: transform 0.1s linear;
+}
+.dive-panel {
+  flex: 0 0 auto;
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px;
+  display: flex; flex-direction: column; gap: 10px;
+  max-height: 40dvh; overflow-y: auto;
+}
+.dive-narrator { margin: 0; font-weight: 800; font-size: clamp(1rem, 1.8vw, 1.18rem); line-height: 1.4; color: var(--deep); }
+.dive-panel .main-button { align-self: flex-start; }
+
+/* ---------- Echte Müll-Bilder, Recyclingstation, Statistik ---------- */
+.pickup.trash-img {
+  width: clamp(34px, 5.5vw, 50px);
+  height: clamp(34px, 5.5vw, 50px);
+  padding: 0;
+  display: grid;
+  place-items: center;
+}
+.pickup.trash-img img {
+  width: 100%; height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.45));
+}
+.pickup.rec-station {
+  width: clamp(80px, 14vw, 130px);
+  background: none; border: 0; padding: 0;
+  animation: none;
+}
+.pickup.rec-station .rec-img {
+  width: 100%; height: auto; display: block;
+  filter: drop-shadow(0 8px 14px rgba(5,39,52,0.45));
+}
+
+.cert-stats { margin: 10px 0 4px; }
+.stats-title { margin: 0 0 4px; color: var(--ocean); font-size: 1.05rem; }
+.stats-sum { margin: 0 0 10px; font-weight: 800; color: var(--deep); }
+.stats-grid { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.stat-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: #eef9f8; border: 1px solid var(--line);
+  border-radius: 999px; padding: 4px 10px; font-size: 0.82rem; font-weight: 700;
+}
+.stat-chip .stat-count { color: var(--ocean); font-weight: 900; }
+
+/* Echtes Tauch-Panorama als scrollender Hintergrund */
+.dive-pano-bg {
+  background-image: url("assets/images/dive_pano.jpg");
+  background-size: auto 100%;
+  background-repeat: repeat-x;
+  background-position-x: 0%;
+}
+/* Buckelwal-Schatten in der trüben Zone (erst rechts sichtbar, kein Spoiler) */
+.dive-whale {
+  position: absolute;
+  right: 14%; top: 46%;
+  transform: translate(40px, -50%) scale(0.8);
+  font-size: clamp(4.5rem, 16vw, 9rem);
+  filter: brightness(0.25) blur(3px) drop-shadow(0 0 30px rgba(0,0,0,0.5));
+  opacity: 0;
+  transition: opacity 1.4s ease, transform 1.6s ease, filter 1.6s ease;
+  z-index: 4;
+  pointer-events: none;
+}
+.dive-whale.show {
+  opacity: 0.92;
+  transform: translate(0, -50%) scale(1);
+  filter: brightness(0.45) blur(1.2px) drop-shadow(0 0 30px rgba(0,0,0,0.45));
+  animation: whalehover 7s ease-in-out infinite alternate;
+}
+
+/* Eingesammeltes Müllteil GROSS über den ganzen Bildschirm einblenden */
+.collect-pop {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: 14;
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgba(7,53,86,0.45), rgba(7,53,86,0) 70%);
+}
+.collect-pop img {
+  width: min(62vh, 62vw);
+  height: min(62vh, 62vw);
+  object-fit: contain;
+  filter: drop-shadow(0 12px 30px rgba(0,0,0,0.55));
+}
+.collect-pop.show { animation: collectpop 1.1s ease forwards; }
+@keyframes collectpop {
+  0% { opacity: 0; }
+  12% { opacity: 1; }
+  18% { opacity: 1; }
+  82% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.collect-praise {
+  position: absolute;
+  top: 14%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: clamp(1.6rem, 5vw, 3rem);
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 3px 14px rgba(0,0,0,0.55);
+  white-space: nowrap;
+}
+.collect-pop.show img { animation: collectpopimg 1.1s ease forwards; }
+@keyframes collectpopimg {
+  0% { transform: scale(0.3) rotate(-8deg); }
+  20% { transform: scale(1.12) rotate(3deg); }
+  35% { transform: scale(1) rotate(0); }
+  82% { transform: scale(1); }
+  100% { transform: scale(0.92); }
+}
+
+/* Mangroven am Strand */
+.mangrove-deco {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-size: clamp(1.6rem, 4vw, 2.6rem);
+  z-index: 1;
+  pointer-events: none;
+  filter: drop-shadow(0 3px 4px rgba(0,0,0,0.3));
+}
+.van-marker.in-mangrove .van-inner { animation: tangle 0.5s ease-in-out infinite alternate; }
+
+/* Urkunde: Müll-Highlights */
+.cert-highlights { margin: 8px 0; }
+.hl-title { margin: 0 0 6px; font-weight: 900; color: var(--ocean); }
+.hl-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.hl-item { width: 60px; font-size: 0.58rem; font-weight: 700; color: #275042; text-align: center; }
+.hl-item img {
+  width: 46px; height: 46px; object-fit: contain;
+  background: #eef9f8; border: 1px solid var(--line); border-radius: 10px;
+  display: block; margin: 0 auto 2px; padding: 3px;
+}
+
+/* Urkunde: E-Mail-Versand */
+.cert-mail {
+  width: min(760px, 100%);
+  background: var(--card);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  padding: 14px 16px;
+  margin-top: 4px;
+}
+.mail-consent { display: flex; gap: 8px; align-items: flex-start; font-size: 0.86rem; line-height: 1.35; cursor: pointer; }
+.mail-consent input { margin-top: 3px; flex: 0 0 auto; width: 18px; height: 18px; }
+.mail-row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.mail-input { flex: 1 1 200px; margin: 0; }
+.mail-note { margin: 8px 0 0; font-size: 0.78rem; color: var(--muted); line-height: 1.35; }
+
+/* Geparktes Auto am Mangroven-Rand (während man zu Fuß ist) */
+.parked-car {
+  position: absolute;
+  transform: translate(-50%, -60%);
+  font-size: clamp(1.6rem, 3.6vw, 2.6rem);
+  z-index: 4;
+  filter: drop-shadow(0 5px 7px rgba(0,0,0,0.35)) grayscale(0.15);
+  pointer-events: none;
+}
+/* Person zu Fuß: etwas kleiner als das Auto */
+.van-marker.on-foot .van-emoji { font-size: clamp(1.4rem, 3vw, 2.2rem); }
+.van-marker.on-foot .boat { display: none; }
+
+/* Countdown beim erneuten Aktivieren einer gelösten Quest */
+.quest-hover {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 8;
+  background: rgba(7,53,86,0.92);
+  color: #fff; font-weight: 800; font-size: 0.8rem;
+  padding: 4px 10px; border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.4);
+  white-space: nowrap; pointer-events: none;
+}
+
+/* Turbo-Countdown-Anzeige */
+.turbo-timer {
+  position: absolute;
+  top: 10px; left: 50%;
+  transform: translateX(-50%);
+  z-index: 9;
+  background: linear-gradient(135deg, #ff8a00, #ff5a5a);
+  color: #fff; font-weight: 900; font-size: clamp(0.95rem, 2vw, 1.2rem);
+  padding: 8px 18px; border-radius: 999px;
+  border: 2px solid rgba(255,255,255,0.6);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+  pointer-events: none;
+}
+/* Turbo: Boot deutlich erkennbar (glühend, Flammen-Akzent) */
+.van-marker.turbo .van-inner::after {
+  content: "🔥";
+  position: absolute; left: -0.7em; top: 0.15em;
+  font-size: 0.55em;
+  animation: pickupbob 0.4s ease-in-out infinite alternate;
+}
+.van-marker.turbo .boat { border-top-color: #ffb400 !important; background: linear-gradient(180deg, #ff8a00, #d24500) !important; }
+.van-marker.turbo .van-inner { filter: drop-shadow(0 0 12px rgba(255,160,40,0.95)); }
+.turbo-timer.final5 { animation: turbopulse 1s ease-in-out infinite; background: linear-gradient(135deg, #ff3b3b, #b00020); }
+@keyframes turbopulse { 0%,100% { transform: translateX(-50%) scale(1); } 50% { transform: translateX(-50%) scale(1.14); } }
+
+/* ---------- Mobil ---------- */
+@media (max-width: 860px) {
+  .app-shell { padding: 8px; gap: 8px; }
+  .app-shell::before { height: 4px; }
+  body { overflow-y: auto; }
+
+  /* Kompakte Kopfzeile, damit die Karte viel Platz bekommt */
+  .topbar { gap: 6px; }
+  .brand { gap: 8px; }
+  .brand-logo-card { width: 38px; height: 38px; border-radius: 10px; padding: 4px; }
+  .brand h1 { font-size: 0.92rem; }
+  .eyebrow { font-size: 0.55rem; margin-bottom: 1px; }
+  .progress-pill, .ghost-button, .small-button { padding: 7px 11px; font-size: 0.82rem; }
+  .hide-mobile { display: none !important; }
+
+  /* Karte füllt fast den ganzen Bildschirm */
+  .map-screen { gap: 8px; }
+  .map-frame { flex: 1 1 auto; min-height: 58dvh; }
+  .map-hint { font-size: 0.86rem; }
+  .joystick { left: 12px; bottom: 12px; }
+
+  /* Station: eine Spalte, Bild oben, Inhalt scrollt natürlich */
+  .game-layout {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+  }
+  .visual-panel { padding: 10px; }
+  .image-card { width: 100%; aspect-ratio: 16 / 10; }
+  .content-panel { overflow: visible; padding: 14px; }
+  .choices { grid-template-columns: 1fr; }
+  .fact-grid { grid-template-columns: 1fr; }
+  .step { font-size: 0.72rem; padding: 6px 2px; }
+  .step span { width: 18px; height: 18px; }
+  .pass-strip { display: none; }
+  .start-hero-grid { grid-template-columns: 1fr; }
+  .start-hero-visual { max-width: 260px; margin: 0 auto; }
+  .main-button, .secondary-button, .next-button { flex: 1 1 auto; }
+}
+
+/* Sehr schmale Telefone hochkant: Titel noch kleiner, Score-Pille kürzer */
+@media (max-width: 480px) {
+  .brand-text { display: none; }       /* nur Logo in der Kopfzeile */
+  .map-frame { min-height: 62dvh; }
+  h2 { font-size: 1.25rem; }
+  .start-card { padding: 16px; }
+}
+
+/* ============ SMARTPHONE: Hoch- vs. Querformat ============ */
+/* Gesteuert per JS-Klasse (html.phone-portrait / html.phone-landscape) – zuverlässig in allen Browsern,
+   inkl. Safari, wo die (pointer)+(orientation)-Media-Queries unzuverlässig sein können. */
+.rotate-hint { display: none; }
+html.phone-portrait .rotate-hint {
+  display: flex; position: fixed; inset: 0; z-index: 9999;
+  background: linear-gradient(160deg, #0b3f66, #1d6fb8);
+  color: #fff; align-items: center; justify-content: center;
+  text-align: center; padding: 28px;
+}
+html.phone-portrait .rotate-icon {
+  font-size: 3.6rem; margin-bottom: 16px;
+  animation: rotatewiggle 1.8s ease-in-out infinite; transform-origin: 50% 50%;
+}
+html.phone-portrait .rotate-hint p { font-size: 1.3rem; font-weight: 800; line-height: 1.45; max-width: 16em; margin: 0; }
+@keyframes rotatewiggle { 0%, 35%, 100% { transform: rotate(0deg); } 65%, 90% { transform: rotate(90deg); } }
+
+/* Querformat-Telefon: Karte bildschirmfüllend und VOLLSTÄNDIG (kein Crop/Verzerren) */
+/* Querformat-Telefon: Karte füllt den GANZEN Schirm, Kamera folgt dem Van (JS) */
+html.phone-landscape .app-shell { padding: 0; gap: 0; position: relative; min-height: 100dvh; }
+html.phone-landscape .map-screen { gap: 0; }
+html.phone-landscape .map-frame {
+  flex: 1 1 auto; min-height: 0;
+  width: 100%; height: 100%; max-width: none;
+  border: none; box-shadow: none; border-radius: 0; overflow: hidden;
+}
+/* Kopfzeile als schlankes Overlay oben (Karte bekommt die volle Höhe) */
+html.phone-landscape .topbar {
+  position: absolute; top: 4px; left: 6px; right: 6px; z-index: 20;
+  padding: 0; background: transparent; pointer-events: none;
+}
+html.phone-landscape .top-actions { pointer-events: auto; }
+html.phone-landscape .brand { display: none; }
+html.phone-landscape .progress-pill,
+html.phone-landscape .ghost-button { padding: 5px 9px; font-size: 0.76rem; min-height: 0; }
+/* Hinweisleiste als Overlay unten rechts (lässt unten links Platz für den Joystick) */
+html.phone-landscape .map-bar {
+  position: absolute; left: 132px; right: 8px; bottom: 6px; z-index: 20;
+  background: transparent; display: flex; gap: 6px; align-items: center; justify-content: flex-end;
+}
+html.phone-landscape .map-hint {
+  font-size: 0.74rem; padding: 3px 9px; margin: 0;
+  background: rgba(7, 53, 86, 0.6); border-radius: 9px;
+}
+/* Joystick als Overlay unten links auf dem Meer */
+html.phone-landscape #joystick {
+  position: fixed; left: 14px; bottom: 14px; right: auto; z-index: 30;
+  width: clamp(78px, 16vh, 116px); height: clamp(78px, 16vh, 116px);
+}
+/* Performance auf dem Handy: nur Deko, die beim Kamera-Schwenk dauernd neu gezeichnet wird, ruhigstellen */
+html.phone-landscape .ambient { display: none; }            /* driftende Fische/Vögel */
+html.phone-landscape .current-arrow { animation: none; }    /* Strömungspfeile statisch */
+html.phone-landscape .map-canvas { backface-visibility: hidden; }
+/* Teure Effekte beim Fahren vermeiden: Van-Schatten (Filter) und pulsende Spot-Schatten kosten auf dem Handy Frames */
+html.phone-landscape .van-marker { filter: none; }
+html.phone-landscape .spot:not(.solved) .spot-icon { animation: none; }
+
+/* ---------- Druck (Urkunde – immer auf EINE Seite) ---------- */
+@media print {
+  @page { size: A4 portrait; margin: 8mm; }
+  html, body { background: #fff; height: auto; overflow: visible; }
+  .topbar, .cert-actions, .cert-mail, .no-print, .start-overlay, .ocean-cue-overlay,
+  .mission-overlay, #mapScreen, #stationScreen, #diveScreen { display: none !important; }
+  .app-shell { padding: 0; gap: 0; min-height: 0; }
+  .app-shell::before { display: none; }
+  .cert-screen { overflow: visible; display: block; padding: 0; }
+  .cert-card {
+    box-shadow: none; width: 100%; border-color: #c9a94e;
+    padding: 10mm; page-break-inside: avoid;
+    /* kompakt halten, damit alles auf eine Seite passt */
+    font-size: 11px;
+  }
+  .cert-logo { height: 40px; margin-bottom: 4px; }
+  .cert-card h2 { font-size: 18px; margin-bottom: 6px; }
+  .cert-name { font-size: 20px; margin: 4px 0; padding: 0 12px 2px; }
+  .cert-text { font-size: 11px; line-height: 1.3; margin: 6px auto 8px; max-width: 100%; }
+  .cert-cards { gap: 5px; margin-bottom: 8px; }
+  .cert-animal { width: 52px; font-size: 8px; }
+  .cert-animal img { width: 40px; height: 40px; }
+  .cert-score { font-size: 12px; margin: 2px 0; }
+  .cert-stats, .cert-highlights { margin: 6px 0; }
+  .stats-title, .hl-title { font-size: 12px; }
+  .stat-chip { font-size: 9px; padding: 2px 7px; }
+  .hl-item { width: 46px; font-size: 7px; }
+  .hl-item img { width: 34px; height: 34px; }
+  .cert-date { font-size: 10px; }
+}
