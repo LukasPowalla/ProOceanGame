@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <defs>
+    <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0a4a66"/>
+      <stop offset="1" stop-color="#072e44"/>
+    </linearGradient>
+    <radialGradient id="bell" cx="0.5" cy="0.35" r="0.8">
+      <stop offset="0" stop-color="#ffd9f2"/>
+      <stop offset="0.55" stop-color="#f2a7dd"/>
+      <stop offset="1" stop-color="#b86fc9"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#f7c7ec" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#f7c7ec" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#sea)"/>
+  <circle cx="60" cy="60" r="5" fill="#9fd8e8" opacity="0.35"/>
+  <circle cx="80" cy="40" r="3" fill="#9fd8e8" opacity="0.3"/>
+  <circle cx="340" cy="220" r="6" fill="#9fd8e8" opacity="0.3"/>
+  <circle cx="320" cy="250" r="3" fill="#9fd8e8" opacity="0.35"/>
+  <circle cx="355" cy="70" r="4" fill="#9fd8e8" opacity="0.3"/>
+  <ellipse cx="200" cy="130" rx="120" ry="100" fill="url(#glow)"/>
+  <path d="M120 130 Q120 50 200 50 Q280 50 280 130 Q255 118 240 132 Q225 118 200 132 Q175 118 160 132 Q145 118 120 130 Z" fill="url(#bell)"/>
+  <path d="M150 90 Q200 65 250 90" stroke="#ffffff" stroke-width="6" stroke-linecap="round" fill="none" opacity="0.4"/>
+  <g stroke-linecap="round" fill="none" opacity="0.85">
+    <path d="M150 138 Q140 175 152 205 Q162 232 150 262" stroke="#e8a8de" stroke-width="7"/>
+    <path d="M180 142 Q172 185 184 215 Q193 242 182 272" stroke="#f2bce8" stroke-width="7"/>
+    <path d="M210 142 Q220 180 208 212 Q198 240 212 270" stroke="#e8a8de" stroke-width="7"/>
+    <path d="M240 138 Q252 172 240 204 Q230 234 244 260" stroke="#f2bce8" stroke-width="7"/>
+    <path d="M128 132 Q118 160 126 186" stroke="#c98bd6" stroke-width="5"/>
+    <path d="M272 132 Q282 160 274 186" stroke="#c98bd6" stroke-width="5"/>
+  </g>
+  <circle cx="178" cy="95" r="6" fill="#7a3f8f" opacity="0.55"/>
+  <circle cx="222" cy="95" r="6" fill="#7a3f8f" opacity="0.55"/>
+  <path d="M188 112 Q200 120 212 112" stroke="#7a3f8f" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.55"/>
+  <g fill="#cfeef5" opacity="0.6" font-family="sans-serif" font-size="20">
+    <text x="300" y="120">𝄢</text>
+  </g>
+</svg>
