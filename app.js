@@ -1333,11 +1333,17 @@ function toggleFoot() {
     van.tx = null; van.ty = null; keys.clear();
     toast(UI().toastOnFoot, 4000);
   } else {
-    // Einsteigen nur in der Nähe des geparkten Autos – sonst könnte man quer durch die Mangroven „cheaten"
-    if (Math.hypot(van.parkX - van.x, van.parkY - van.y) > 5) { toast(UI().toastBackToCar, 4000); return; }
-    van.onFoot = false; van.x = van.parkX; van.y = van.parkY;
-    van.tx = null; van.ty = null; keys.clear();
-    toast(UI().toastInCar, 3500);
+    // „Einsteigen": nah → direkt rein; sonst automatisch zum Auto zurücklaufen und dort einsteigen
+    // (kein Teleport quer durch die Mangroven, aber immer mit einem Tipp erledigt)
+    const dist = Math.hypot(van.parkX - van.x, van.parkY - van.y);
+    if (dist <= 4) {
+      van.onFoot = false; van.x = van.parkX; van.y = van.parkY;
+      van.tx = null; van.ty = null; van.returningToCar = false; keys.clear();
+      toast(UI().toastInCar, 3500);
+    } else {
+      van.returningToCar = true; van.tx = van.parkX; van.ty = van.parkY;
+      toast(UI().toastBackToCar, 3000);
+    }
   }
   updateFootBtn();
   drawVan();
@@ -1618,7 +1624,7 @@ function gameLoop(ts) {
     const spd = SPEED * (state.turbo ? 1.7 : (boatUnlocked() ? 1 : 0.4));
     const iv = inputVector();
     if (iv.dx || iv.dy) {
-      van.tx = null; van.ty = null;           // Tasten/Joystick übersteuern Autopilot
+      van.tx = null; van.ty = null; van.returningToCar = false;   // Tasten/Joystick übersteuern Autopilot
       dx = iv.dx * spd * dt;
       dy = iv.dy * spd * dt;
     } else if (van.tx !== null) {
@@ -1714,10 +1720,10 @@ function gameLoop(ts) {
     // Zu Fuß: wenn man zum geparkten Auto zurückkommt -> automatisch wieder einsteigen
     if (van.onFoot) {
       const distCar = Math.hypot(van.parkX - van.x, van.parkY - van.y);
-      if (distCar > 3) van.leftCar = true;
-      if (van.leftCar && distCar < 3.2) {
+      if (distCar > 4) van.leftCar = true;
+      if ((van.leftCar || van.returningToCar) && distCar < 2) {
         van.onFoot = false; van.x = van.parkX; van.y = van.parkY;
-        van.tx = null; van.ty = null;
+        van.tx = null; van.ty = null; van.returningToCar = false;
         toast(UI().toastInCar, 3500);
       }
     }
