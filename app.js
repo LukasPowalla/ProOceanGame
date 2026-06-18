@@ -1136,12 +1136,39 @@ function showCollectPop(img, ms) {
 
 /* ---------- Audio-Engine (echte Sounddateien, zuverlässig & leise) ---------- */
 // iOS/iPadOS ignoriert HTMLAudioElement.volume (read-only) -> dort steuern wir leise/aus über "muted".
-const IS_IOS = /iP(hone|od|ad)/.test(navigator.userAgent || "")
-  || (navigator.platform === "MacIntel" && (navigator.maxTouchPoints || 0) > 1);
+// Nur echtes iPhone/iPad/iPod (per User-Agent). Wichtig: Desktop-Macs NICHT erfassen,
+// sonst würde dort fälschlich die iOS-Tonsteuerung greifen (Leerlauf stumm). Auf dem Mac
+// funktioniert element.volume normal.
+const IS_IOS = /iPhone|iPad|iPod/.test(navigator.userAgent || "");
 const AUDIO = {
   cache: {},
   mode: "off",
   unlocked: false,
+
+  // Web-Audio-Lautstärke nur dort verwenden, wo element.volume ignoriert wird (iOS).
+  // So lassen sich die Loops auch auf dem iPhone leise/abgestuft regeln (Leerlauf leise, beim Fahren lauter).
+  ctx: null,
+  gainNodes: {},
+  gainOn: IS_IOS,
+  ensureCtx() {
+    if (this.ctx || !this.gainOn) return;
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) this.ctx = new AC();
+    } catch (e) { this.ctx = null; }
+  },
+  // GainNode für einen Loop anlegen – aber NUR wenn der Context wirklich läuft
+  // (sonst würde die Verkabelung den Ton stummschalten). Sonst null -> Fallback.
+  gainFor(src, a) {
+    if (!this.ctx || this.ctx.state !== "running") return null;
+    if (src in this.gainNodes) return this.gainNodes[src];
+    try {
+      const node = this.ctx.createMediaElementSource(a);
+      const g = this.ctx.createGain();
+      node.connect(g); g.connect(this.ctx.destination);
+      this.gainNodes[src] = g; return g;
+    } catch (e) { this.gainNodes[src] = null; return null; }
+  },
 
   get(src) {
     if (!this.cache[src]) {
@@ -1169,6 +1196,9 @@ const AUDIO = {
         a.play().then(() => { a.pause(); a.currentTime = 0; }).catch(() => {});
       } catch (e) {}
     });
+    // Web-Audio-Context in derselben Nutzergeste starten (für echte Lautstärke auf iOS)
+    this.ensureCtx();
+    if (this.ctx && this.ctx.resume) { try { this.ctx.resume().catch(() => {}); } catch (e) {} }
   },
 
   // Drei Dauer-Loops mit weichem Lautstärke-Crossfade: Auto (Land), Boot (Wasser), Rudern (Lagune)
@@ -1201,10 +1231,19 @@ const AUDIO = {
       const a = this.cache[this.loopSrc[k]];
       if (a) {
         try {
-          a.volume = Math.max(0, Math.min(1, nv));
-          // iOS: volume wird ignoriert -> leise Leerlauf-Geräusche über muted ausblenden,
-          // damit kein lautes Tuckern/Brummen im Stand läuft (nur beim Fahren hörbar).
-          if (IS_IOS) a.muted = nv < 0.2;
+          const vol = Math.max(0, Math.min(1, nv));
+          const g = this.gainOn ? this.gainFor(this.loopSrc[k], a) : null;
+          if (g) {
+            // iOS mit laufendem Web-Audio: echte, abgestufte Lautstärke (Leerlauf leise, Fahrt lauter)
+            g.gain.value = vol; a.muted = false; a.volume = 1;
+          } else if (this.gainOn) {
+            // Fallback (Web-Audio noch nicht bereit): volume wird auf iOS ignoriert,
+            // daher leise Leerlauf-Loops über muted ausblenden statt sie laut laufen zu lassen.
+            a.volume = vol; a.muted = vol < 0.2;
+          } else {
+            // Desktop/Android: element.volume funktioniert wie gewohnt.
+            a.volume = vol; a.muted = false;
+          }
           if (nv <= 0.001 && !a.paused) a.pause();
         } catch (e) {}
       }
@@ -2630,7 +2669,6 @@ function startGame(withFullscreen) {
   state.started = true;
   if (state.sound) AUDIO.prime();   // Audiowiedergabe per Nutzergeste freischalten
   document.documentElement.classList.remove("at-start");
-  window.scrollTo(0, 0);
   els.startOverlay.classList.add("hidden");
   renderMap();
   showMission(1);

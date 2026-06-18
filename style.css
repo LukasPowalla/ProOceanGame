@@ -894,6 +894,7 @@ h2 { margin: 0; font-size: clamp(1.3rem, 2.5vw, 2.1rem); line-height: 1.08; colo
   border: 2px solid var(--line);
   padding: 11px 14px;
   font: inherit;
+  font-size: 16px;   /* >=16px verhindert das automatische Hineinzoomen von iOS beim Antippen */
   margin-bottom: 12px;
   background: #fff;
 }
