@@ -268,6 +268,7 @@ const I18N = {
       modeProSub: "Ohne Hilfen, doppelte Muscheln",
       startFs: "Spiel im Vollbild starten",
       startWin: "Ohne Vollbild starten",
+      homeHint: "📲 Tipp fürs Handy: Über das Teilen-Menü „Zum Home-Bildschirm hinzufügen“ und vom Icon starten – dann läuft das Spiel randlos im Vollbild.",
       mapHint: "Steuere den Ocean Van mit den Pfeiltasten – oder tippe aufs Meer. Fahre zu einem ❓!",
       mapHintFinale: "Alle Tiere entdeckt! Fahre hinaus zum ⭐ im Meer für das große Finale.",
       mapHintDone: "Klangreise geschafft! Du kannst jede Station noch einmal besuchen.",
@@ -543,6 +544,7 @@ const I18N = {
       modeProSub: "No hints, double shells",
       startFs: "Start game in fullscreen",
       startWin: "Start without fullscreen",
+      homeHint: "📲 Phone tip: use the Share menu → “Add to Home Screen” and launch from the icon – then the game runs edge-to-edge in fullscreen.",
       mapHint: "Steer the Ocean Van with the arrow keys – or tap the sea. Drive to a ❓!",
       mapHintFinale: "All animals discovered! Sail out to the ⭐ in the sea for the grand finale.",
       mapHintDone: "Sound journey complete! You can visit every station again.",
@@ -1331,6 +1333,7 @@ function toggleFoot() {
     van.tx = null; van.ty = null; keys.clear();
     toast(UI().toastOnFoot, 4000);
   } else {
+    // Einsteigen nur in der Nähe des geparkten Autos – sonst könnte man quer durch die Mangroven „cheaten"
     if (Math.hypot(van.parkX - van.x, van.parkY - van.y) > 5) { toast(UI().toastBackToCar, 4000); return; }
     van.onFoot = false; van.x = van.parkX; van.y = van.parkY;
     van.tx = null; van.ty = null; keys.clear();
@@ -1340,8 +1343,11 @@ function toggleFoot() {
   drawVan();
 }
 function updateFootBtn() {
-  // Aussteigen/Einsteigen passiert automatisch an den Mangroven – kein Knopf nötig
-  if (els.footBtn) els.footBtn.classList.add("hidden");
+  // Zu Fuß: zuverlässiger „Einsteigen"-Knopf (das automatische Einsteigen ist auf dem Handy oft fummelig)
+  if (!els.footBtn) return;
+  const show = van.onFoot && mapVisible();
+  els.footBtn.classList.toggle("hidden", !show);
+  if (show) els.footBtn.textContent = UI().btnEnterCar;
 }
 
 // Voll-Meldung: einheitlich "Du kannst nichts mehr tragen" (im Van wie zu Fuß)
@@ -1708,8 +1714,8 @@ function gameLoop(ts) {
     // Zu Fuß: wenn man zum geparkten Auto zurückkommt -> automatisch wieder einsteigen
     if (van.onFoot) {
       const distCar = Math.hypot(van.parkX - van.x, van.parkY - van.y);
-      if (distCar > 4) van.leftCar = true;
-      if (van.leftCar && distCar < 2) {
+      if (distCar > 3) van.leftCar = true;
+      if (van.leftCar && distCar < 3.2) {
         van.onFoot = false; van.x = van.parkX; van.y = van.parkY;
         van.tx = null; van.ty = null;
         toast(UI().toastInCar, 3500);

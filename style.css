@@ -1515,6 +1515,14 @@ html.phone-portrait .rotate-icon {
 html.phone-portrait .rotate-hint p { font-size: 1.3rem; font-weight: 800; line-height: 1.45; max-width: 16em; margin: 0; }
 @keyframes rotatewiggle { 0%, 35%, 100% { transform: rotate(0deg); } 65%, 90% { transform: rotate(90deg); } }
 
+/* Vollbild-Tipp auf dem Startbildschirm – nur auf Smartphones zeigen */
+.home-hint { display: none; }
+html.phone-landscape .home-hint,
+html.phone-portrait .home-hint {
+  display: block; margin: 10px 0 0; font-size: 0.8rem; line-height: 1.35;
+  opacity: 0.85; text-align: center; color: var(--deep);
+}
+
 /* Querformat-Telefon: Karte bildschirmfüllend und VOLLSTÄNDIG (kein Crop/Verzerren) */
 /* Querformat-Telefon: Karte füllt den GANZEN Schirm, Kamera folgt dem Van (JS) */
 html.phone-landscape .app-shell { padding: 0; gap: 0; position: relative; min-height: 100dvh; }
