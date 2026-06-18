@@ -11,7 +11,7 @@
   <meta name="apple-mobile-web-app-title" content="Ocean Van">
   <title>Deine Ocean Van Klangreise – Pro Ocean</title>
   <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="style.css?v=21">
+  <link rel="stylesheet" href="style.css?v=22">
 </head>
 <body>
   <!-- Hinweis: Handy quer drehen (nur auf Smartphones im Hochformat sichtbar) -->
@@ -215,6 +215,19 @@
 
     <!-- ====== URKUNDE ====== -->
     <main id="certScreen" class="cert-screen hidden">
+      <!-- QR-Code oben auf der Seite (rein clientseitig, keine Datenübertragung) – nicht Teil der Urkunde -->
+      <div class="cert-share no-print">
+        <h3 id="certShareHeading" class="share-heading"></h3>
+        <p id="certShareHint" class="share-hint"></p>
+        <div id="certQr" class="cert-qr" aria-hidden="true"></div>
+        <div class="share-actions">
+          <a id="certOpenLink" class="ghost-button dark" target="_blank" rel="noopener"></a>
+          <button id="certCopyBtn" class="ghost-button dark" type="button"></button>
+        </div>
+        <p id="certLinkLabel" class="share-link-label"></p>
+        <a id="certUrlText" class="share-url" target="_blank" rel="noopener"></a>
+        <p id="certLocalNote" class="share-note"></p>
+      </div>
       <div class="cert-card" id="certCard">
         <img class="cert-logo" src="assets/brand/proocean_logo.png" alt="Pro Ocean">
         <p class="eyebrow" data-i18n="certEyebrow"></p>
@@ -226,27 +239,14 @@
         <div id="certStats" class="cert-stats"></div>
         <div id="certHighlights" class="cert-highlights"></div>
         <p id="certDate" class="cert-date"></p>
+        <p id="certContact" class="cert-contact">
+          <span id="certContactText"></span>
+          <a href="https://www.pro-ocean.com/de/kontakt/" target="_blank" rel="noopener">https://www.pro-ocean.com/de/kontakt/</a>
+        </p>
       </div>
       <div class="cert-actions no-print">
-        <button id="printBtn" class="main-button" type="button"></button>
         <button id="certMapBtn" class="ghost-button dark" type="button"></button>
         <button id="certRestartBtn" class="next-button" type="button"></button>
-      </div>
-      <div class="cert-mail no-print">
-        <p id="mailHeading" class="mail-heading"></p>
-        <div class="mail-row">
-          <input id="mailInput" class="name-input mail-input" type="email" autocomplete="off">
-        </div>
-        <label class="mail-consent">
-          <input id="consentCert" type="checkbox">
-          <span id="consentCertText"></span>
-        </label>
-        <label class="mail-consent">
-          <input id="consentNews" type="checkbox">
-          <span id="consentNewsText"></span>
-        </label>
-        <button id="mailBtn" class="ghost-button dark" type="button" disabled></button>
-        <p id="mailNote" class="mail-note"></p>
       </div>
     </main>
   </div>
@@ -254,6 +254,7 @@
   <!-- ====== START ====== -->
   <div id="startOverlay" class="start-overlay">
     <div class="start-card">
+      <p class="scroll-cue" data-i18n="scrollCue" aria-hidden="true"></p>
       <div class="start-logo-line">
         <img src="assets/brand/proocean_logo.png" alt="Pro Ocean">
         <span data-i18n="eyebrow"></span>
@@ -306,6 +307,7 @@
   </div>
 
   <audio id="animalAudio" preload="auto"></audio>
-  <script src="app.js?v=22"></script>
+  <script src="qrcode.js?v=1"></script>
+  <script src="app.js?v=26"></script>
 </body>
 </html>

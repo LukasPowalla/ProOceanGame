@@ -268,6 +268,7 @@ const I18N = {
       modeProSub: "Ohne Hilfen, doppelte Muscheln",
       startFs: "Spiel im Vollbild starten",
       startWin: "Ohne Vollbild starten",
+      scrollCue: "👇 Tipp: einmal nach unten wischen – dann nutzt das Spiel den ganzen Bildschirm.",
       homeHint: "📲 Tipp fürs Handy: Über das Teilen-Menü „Zum Home-Bildschirm hinzufügen“ und vom Icon starten – dann läuft das Spiel randlos im Vollbild.",
       mapHint: "Steuere den Ocean Van mit den Pfeiltasten – oder tippe aufs Meer. Fahre zu einem ❓!",
       mapHintFinale: "Alle Tiere entdeckt! Fahre hinaus zum ⭐ im Meer für das große Finale.",
@@ -354,14 +355,15 @@ const I18N = {
       statsTotal: (n) => `Insgesamt eingesammelt: ${n} Teile`,
       statsDistinct: (d, tot) => `Verschiedene Müllarten: ${d} von ${tot}`,
       highlightsTitle: "Deine Müll-Highlights",
+      certContact: "Haben wir dein Interesse geweckt? Dann kontaktiere uns über:",
+      certShareHeading: "📱 Urkunde aufs Handy holen",
+      certShareHint: "Scanne den QR-Code mit deiner Handy-Kamera – deine Urkunde öffnet sich direkt im Browser.",
+      certOpen: "🏅 Urkunde öffnen",
+      certCopy: "🔗 Link kopieren",
+      certCopied: "Link kopiert ✓",
+      certLinkLabel: "Falls der QR-Code nicht klappt, hier der Link:",
+      certLocalNote: "Die Urkunde wird nur lokal in deinem Browser erzeugt. Die eingegebenen Daten werden nicht an uns gesendet und nicht gespeichert.",
       turboBtn: "🚀 Turbo: weiter Müll sammeln!",
-      mailHeading: "Urkunde per E-Mail / Newsletter (optional)",
-      mailPlaceholder: "deine@email.de",
-      consentCert: "Urkunde per E-Mail erhalten: Meine E-Mail wird nur zum einmaligen Versand dieser Urkunde genutzt und nicht gespeichert.",
-      consentNews: "Pro Ocean Newsletter abonnieren: Meine E-Mail darf für den Newsletter gespeichert und genutzt werden (Einwilligung, jederzeit widerrufbar).",
-      mailSend: "📧 Absenden",
-      mailSubject: "Meine Pro Ocean Forscher-Urkunde",
-      mailNote: "Hinweis: Ohne Häkchen wird nichts versendet oder gespeichert. Drucken/PDF geht ganz ohne E-Mail. (Für den Newsletter wird eine kleine Datei mit deiner Einwilligung erzeugt, die Pro Ocean in ihr System übernimmt.)",
       reset: "Neu starten",
       resetTitle: "Neu starten?",
       resetConfirm: "Alles wird zurückgesetzt: Muscheln, Tiere, Müll und Name. Danach geht es ganz von vorne los.",
@@ -544,6 +546,7 @@ const I18N = {
       modeProSub: "No hints, double shells",
       startFs: "Start game in fullscreen",
       startWin: "Start without fullscreen",
+      scrollCue: "👇 Tip: swipe down once – then the game uses the whole screen.",
       homeHint: "📲 Phone tip: use the Share menu → “Add to Home Screen” and launch from the icon – then the game runs edge-to-edge in fullscreen.",
       mapHint: "Steer the Ocean Van with the arrow keys – or tap the sea. Drive to a ❓!",
       mapHintFinale: "All animals discovered! Sail out to the ⭐ in the sea for the grand finale.",
@@ -630,14 +633,15 @@ const I18N = {
       statsTotal: (n) => `Collected in total: ${n} pieces`,
       statsDistinct: (d, tot) => `Different litter types: ${d} of ${tot}`,
       highlightsTitle: "Your litter highlights",
+      certContact: "Have we sparked your interest? Then get in touch with us at:",
+      certShareHeading: "📱 Get your certificate on your phone",
+      certShareHint: "Scan the QR code with your phone camera – your certificate opens right in the browser.",
+      certOpen: "🏅 Open certificate",
+      certCopy: "🔗 Copy link",
+      certCopied: "Link copied ✓",
+      certLinkLabel: "If the QR code doesn't work, here is the link:",
+      certLocalNote: "The certificate is generated locally in your browser only. The data you enter is not sent to us and not stored.",
       turboBtn: "🚀 Turbo: keep collecting!",
-      mailHeading: "Certificate by email / newsletter (optional)",
-      mailPlaceholder: "you@email.com",
-      consentCert: "Receive certificate by email: my email is used only to send this certificate once and is not stored.",
-      consentNews: "Subscribe to the Pro Ocean newsletter: my email may be stored and used for the newsletter (consent, revocable anytime).",
-      mailSend: "📧 Submit",
-      mailSubject: "My Pro Ocean Explorer Certificate",
-      mailNote: "Note: nothing is sent or stored without a checkbox. Printing/PDF works without email. (For the newsletter a small consent file is created for Pro Ocean to import into their system.)",
       reset: "Restart",
       resetTitle: "Restart?",
       resetConfirm: "Everything will be reset: shells, animals, litter and name. You will start again from the very beginning.",
@@ -816,9 +820,6 @@ const els = {
   diveBoat: $("diveBoat"), diveCompass: $("diveCompass"),
   collectPop: $("collectPop"),
   certHighlights: $("certHighlights"),
-  mailHeading: $("mailHeading"), mailInput: $("mailInput"), mailBtn: $("mailBtn"), mailNote: $("mailNote"),
-  consentCert: $("consentCert"), consentCertText: $("consentCertText"),
-  consentNews: $("consentNews"), consentNewsText: $("consentNewsText"),
   diveNarrator: $("diveNarrator"), diveActionBtn: $("diveActionBtn"),
   diveQuestionBox: $("diveQuestionBox"), diveQuestionText: $("diveQuestionText"),
   diveChoices: $("diveChoices"), diveFeedback: $("diveFeedback"),
@@ -844,7 +845,11 @@ const els = {
   certScreen: $("certScreen"), certTitle: $("certTitle"), certName: $("certName"),
   certText: $("certText"), certCards: $("certCards"), certScore: $("certScore"),
   certStats: $("certStats"), certDate: $("certDate"),
-  printBtn: $("printBtn"), certMapBtn: $("certMapBtn"), certRestartBtn: $("certRestartBtn"),
+  certContactText: $("certContactText"),
+  certShareHeading: $("certShareHeading"), certShareHint: $("certShareHint"), certQr: $("certQr"),
+  certOpenLink: $("certOpenLink"), certCopyBtn: $("certCopyBtn"),
+  certLinkLabel: $("certLinkLabel"), certUrlText: $("certUrlText"), certLocalNote: $("certLocalNote"),
+  certMapBtn: $("certMapBtn"), certRestartBtn: $("certRestartBtn"),
   steps: { listen: $("stepListen"), hint: $("stepHint"), answer: $("stepAnswer"), learn: $("stepLearn") }
 };
 
@@ -922,7 +927,6 @@ function applyStaticTexts() {
   els.startWindowBtn.textContent = UI().startWin;
   els.readAloudBtn.textContent = UI().readAloud;
   els.resetBtn.textContent = UI().reset;
-  els.printBtn.textContent = UI().print;
   els.certMapBtn.textContent = UI().backToMap;
   els.certRestartBtn.textContent = UI().playAgain;
   els.langToggle.textContent = state.lang === "de" ? "EN" : "DE";
@@ -1131,6 +1135,9 @@ function showCollectPop(img, ms) {
 }
 
 /* ---------- Audio-Engine (echte Sounddateien, zuverlässig & leise) ---------- */
+// iOS/iPadOS ignoriert HTMLAudioElement.volume (read-only) -> dort steuern wir leise/aus über "muted".
+const IS_IOS = /iP(hone|od|ad)/.test(navigator.userAgent || "")
+  || (navigator.platform === "MacIntel" && (navigator.maxTouchPoints || 0) > 1);
 const AUDIO = {
   cache: {},
   mode: "off",
@@ -1155,7 +1162,10 @@ const AUDIO = {
      "assets/audio/humpback_whale.mp3", "assets/audio/boat_pass.mp3"].forEach(src => {
       try {
         const a = this.get(src);
-        a.loop = true; a.volume = 0;
+        // Stumm freischalten und stumm LASSEN. Erst der echte Abspiel-Aufruf (setTargets/playOnce/
+        // playLoop) hebt die Stummschaltung auf. So entsteht beim Start nie ein kurzer Ton (Wal/Boot),
+        // egal wie schnell pause() greift (iOS ignoriert volume, respektiert aber muted).
+        a.loop = true; a.muted = true; a.volume = 0;
         a.play().then(() => { a.pause(); a.currentTime = 0; }).catch(() => {});
       } catch (e) {}
     });
@@ -1175,7 +1185,7 @@ const AUDIO = {
     if (!state.sound) { this.target.car = this.target.boat = this.target.row = this.target.step = 0; }
     ["car", "boat", "row", "step"].forEach(k => {
       if (this.target[k] > 0) {
-        try { const a = this.get(this.loopSrc[k]); a.loop = true; if (a.paused) a.play().catch(() => {}); } catch (e) {}
+        try { const a = this.get(this.loopSrc[k]); a.loop = true; a.muted = false; if (a.paused) a.play().catch(() => {}); } catch (e) {}
       }
     });
   },
@@ -1192,6 +1202,9 @@ const AUDIO = {
       if (a) {
         try {
           a.volume = Math.max(0, Math.min(1, nv));
+          // iOS: volume wird ignoriert -> leise Leerlauf-Geräusche über muted ausblenden,
+          // damit kein lautes Tuckern/Brummen im Stand läuft (nur beim Fahren hörbar).
+          if (IS_IOS) a.muted = nv < 0.2;
           if (nv <= 0.001 && !a.paused) a.pause();
         } catch (e) {}
       }
@@ -1210,7 +1223,7 @@ const AUDIO = {
   playOnce(src, vol) {
     if (!state.sound) return null;
     const a = this.get(src);
-    a.loop = false; a.volume = (vol == null ? 1 : vol);
+    a.loop = false; a.muted = false; a.volume = (vol == null ? 1 : vol);
     try { a.currentTime = 0; } catch (e) {}
     try { a.play().catch(() => {}); } catch (e) {}
     return a;
@@ -1218,7 +1231,7 @@ const AUDIO = {
   playLoop(src, vol) {
     if (!state.sound) return null;
     const a = this.get(src);
-    a.loop = true; a.volume = (vol == null ? 1 : vol);
+    a.loop = true; a.muted = false; a.volume = (vol == null ? 1 : vol);
     try { a.currentTime = 0; } catch (e) {}
     try { a.play().catch(() => {}); } catch (e) {}
     return a;
@@ -1289,8 +1302,10 @@ const WORLD_AR = 1000 / 640;   // Seitenverhältnis der Spielwelt
 const CAM_ZOOM = 1.12;         // leichte Vergrößerung, damit Symbole nicht zu klein sind
 let camOn = false;
 function drawVan() {
-  els.vanMarker.style.left = van.x + "%";
-  els.vanMarker.style.top = van.y + "%";
+  // Nur schreiben, wenn sich die Position wirklich geändert hat (spart Style-Invalidierungen je Frame)
+  const lx = van.x.toFixed(2), ly = van.y.toFixed(2);
+  if (els._vanLx !== lx) { els.vanMarker.style.left = lx + "%"; els._vanLx = lx; }
+  if (els._vanLy !== ly) { els.vanMarker.style.top = ly + "%"; els._vanLy = ly; }
   const water = !isLand(van.x, van.y);
   els.vanMarker.classList.toggle("on-water", water && !van.onFoot);
   els.vanMarker.classList.toggle("on-foot", van.onFoot);
@@ -1691,17 +1706,22 @@ function gameLoop(ts) {
     }
     // Auto erreicht die Mangroven -> automatisch aussteigen, Auto bleibt am Rand stehen
     if (!van.onFoot && inMangrove(nx, ny)) {
-      van.onFoot = true; van.parkX = van.x; van.parkY = van.y; van.leftCar = false;
+      van.onFoot = true; van.parkX = van.x; van.parkY = van.y;
+      van.returningToCar = false; van.tx = null; van.ty = null;
       toast(UI().toastMangroveCar, 5200);
-      // nx/ny dürfen jetzt (zu Fuß) in die Mangrove
     }
-    // Zu Fuß: nur in den Mangroven (oder zurück zum Auto). Sonst Hinweis "zuerst zum Auto"
-    if (van.onFoot) {
-      const nearCar = Math.hypot(van.parkX - nx, van.parkY - ny) <= 3;
-      if (!inMangrove(nx, ny) && !nearCar) {
-        nx = van.x; ny = van.y;
+    // Zu Fuß: in den Mangroven frei laufen. Einsteigen passiert NUR, wenn man die Mangrovengrenze
+    // verlässt UND dabei nah genug am geparkten Auto ist. Drinnen wird man nie ins Auto „gesaugt".
+    if (van.onFoot && !inMangrove(nx, ny)) {
+      const distCar = Math.hypot(van.parkX - nx, van.parkY - ny);
+      if (distCar <= 6) {
+        van.onFoot = false; nx = van.parkX; ny = van.parkY;
+        van.returningToCar = false; van.tx = null; van.ty = null; keys.clear();
+        toast(UI().toastInCar, 3500);
+      } else {
+        nx = van.x; ny = van.y;   // zu weit vom Auto -> in den Mangroven bleiben
         if (van.tx !== null || hasInput()) toast(UI().toastBackToCar, 4000);
-        van.tx = null; van.ty = null;
+        van.tx = null; van.ty = null; van.returningToCar = false;
       }
     }
 
@@ -1717,15 +1737,11 @@ function gameLoop(ts) {
       }
     }
 
-    // Zu Fuß: wenn man zum geparkten Auto zurückkommt -> automatisch wieder einsteigen
-    if (van.onFoot) {
-      const distCar = Math.hypot(van.parkX - van.x, van.parkY - van.y);
-      if (distCar > 4) van.leftCar = true;
-      if ((van.leftCar || van.returningToCar) && distCar < 2) {
-        van.onFoot = false; van.x = van.parkX; van.y = van.parkY;
-        van.tx = null; van.ty = null; van.returningToCar = false;
-        toast(UI().toastInCar, 3500);
-      }
+    // Einsteigen-Knopf: Figur ist per Autopilot zum Auto zurückgelaufen -> einsteigen
+    if (van.onFoot && van.returningToCar && Math.hypot(van.parkX - van.x, van.parkY - van.y) < 2) {
+      van.onFoot = false; van.x = van.parkX; van.y = van.parkY;
+      van.tx = null; van.ty = null; van.returningToCar = false;
+      toast(UI().toastInCar, 3500);
     }
 
     // Einsammeln/Abliefern/Netze laufen jedes Frame (auch beim Stillstehen am Netz/an der Station)
@@ -1843,7 +1859,6 @@ document.addEventListener("keydown", (e) => {
   if (visible(els.certScreen)) {
     if (typing) return;   // Während Name-/Mail-Eingabe keine Tastenkürzel auslösen
     if (k === "Enter") { e.preventDefault(); clickIfVisible(els.certRestartBtn); }
-    else if (lower === "p") { e.preventDefault(); clickIfVisible(els.printBtn); }
     else if (lower === "m" || k === "Escape") { e.preventDefault(); clickIfVisible(els.certMapBtn); }
     return;
   }
@@ -2339,7 +2354,7 @@ function diveSonar() {
   els.diveActionBtn.classList.add("hidden");
   AUDIO.stop(SND_WHALE);
   els.diveScene.classList.add("shake");
-  AUDIO.playOnce(SND_SONAR, 0.9);
+  AUDIO.playOnce(SND_SONAR, 0.35);   // deutlich leiser (vorher 0.9) – weiterhin gut hörbar
   els.diveNarrator.textContent = UI().diveSonarPlaying;
   clearTimeout(dive.boatTimer);
   dive.boatTimer = setTimeout(() => {
@@ -2434,16 +2449,6 @@ function renderCertificate() {
     } else { els.certHighlights.innerHTML = ""; }
   }
 
-  // E-Mail / Newsletter (DSGVO): Texte + Zustand zurücksetzen
-  if (els.mailHeading) els.mailHeading.textContent = u.mailHeading;
-  if (els.mailInput) els.mailInput.placeholder = u.mailPlaceholder;
-  if (els.consentCertText) els.consentCertText.textContent = u.consentCert;
-  if (els.consentNewsText) els.consentNewsText.textContent = u.consentNews;
-  if (els.mailBtn) { els.mailBtn.textContent = u.mailSend; els.mailBtn.disabled = true; }
-  if (els.mailNote) els.mailNote.textContent = u.mailNote;
-  if (els.consentCert) els.consentCert.checked = false;
-  if (els.consentNews) els.consentNews.checked = false;
-
   els.certCards.innerHTML = "";
   SPOTS.forEach(s => {
     const card = document.createElement("div");
@@ -2452,25 +2457,63 @@ function renderCertificate() {
     els.certCards.appendChild(card);
   });
   document.querySelector("[data-i18n='certEyebrow']").textContent = u.certEyebrow;
+
+  // Kontakt-Hinweis in der Urkunde
+  if (els.certContactText) els.certContactText.textContent = u.certContact;
+
+  // QR-Code + Teilen-Bereich
+  renderCertShare();
 }
 
-function buildCertMailto() {
-  const u = UI();
-  const cats = Object.keys(state.collected).sort((a, b) => state.collected[b] - state.collected[a]);
-  const lines = cats.map(c => `- ${state.lang === "de" ? CAT[c].de : CAT[c].en}: ${state.collected[c]}`);
-  const body = [
-    u.certTitle, "",
-    `${u.certName ? "" : ""}${state.name || u.certAnon}`,
-    u.certScore(state.shells, state.recycled), "",
-    u.statsDistinct(distinctCats(), TOTAL_CATS),
-    u.statsTotal(totalCollected()), "",
-    u.highlightsTitle, ...lines, "",
-    "Pro Ocean – " + u.certEyebrow
-  ].join("\n");
-  const subject = u.mailSubject;
-  return `mailto:${encodeURIComponent(els.mailInput ? els.mailInput.value.trim() : "")}` +
-    `?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+/* ---------- Urkunde teilen: QR-Code + Link (rein clientseitig, keine Datenübertragung) ---------- */
+// Basis-URL der Urkundenseite. Online: relativ zur aktuellen Seite (funktioniert auf GitHub Pages
+// und localhost). Offline-Einzeldatei (file://): feste GitHub-Pages-URL, damit der QR scannbar bleibt.
+const CERT_PUBLIC_BASE = "https://lukaspowalla.github.io/ProOceanGame/";
+function certBaseUrl() {
+  if (location.protocol === "file:") return CERT_PUBLIC_BASE;
+  try { return new URL(".", location.href).href; } catch (e) { return CERT_PUBLIC_BASE; }
 }
+function buildCertUrl() {
+  const params = new URLSearchParams();
+  const name = (state.name || "").slice(0, 30);
+  if (name) params.set("name", name);
+  params.set("score", String(state.shells));
+  params.set("recycled", String(state.recycled));
+  if (state.turboScore != null) params.set("turbo", String(state.turboScore));
+  params.set("collectedTrashCount", String(totalCollected()));
+  const types = Object.keys(state.collected)
+    .sort((a, b) => state.collected[b] - state.collected[a])
+    .map(c => `${c}:${state.collected[c]}`).join(",");
+  if (types) params.set("trashTypes", types);
+  params.set("date", new Date().toISOString().slice(0, 10));
+  params.set("lang", state.lang);
+  return certBaseUrl() + "certificate.html?" + params.toString();
+}
+function renderCertShare() {
+  const u = UI();
+  if (els.certShareHeading) els.certShareHeading.textContent = u.certShareHeading;
+  if (els.certShareHint) els.certShareHint.textContent = u.certShareHint;
+  if (els.certLinkLabel) els.certLinkLabel.textContent = u.certLinkLabel;
+  if (els.certLocalNote) els.certLocalNote.textContent = u.certLocalNote;
+  if (els.certOpenLink) els.certOpenLink.textContent = u.certOpen;
+  if (els.certCopyBtn) els.certCopyBtn.textContent = u.certCopy;
+
+  const url = buildCertUrl();
+  if (els.certOpenLink) els.certOpenLink.href = url;
+  if (els.certUrlText) { els.certUrlText.textContent = url; els.certUrlText.href = url; }
+
+  // QR-Code clientseitig erzeugen (lokale Bibliothek, kein externer Dienst)
+  if (els.certQr) {
+    els.certQr.innerHTML = "";
+    try {
+      if (window.QRGen) {
+        els.certQr.innerHTML = window.QRGen.svg(url, window.QRGen.Ecc.MEDIUM,
+          { border: 2, light: "#ffffff", dark: "#0b3f66" });
+      }
+    } catch (e) { els.certQr.innerHTML = ""; }   // Fallback: nur der Link bleibt sichtbar
+  }
+}
+
 
 /* ---------- Navigation ---------- */
 function goToMap() {
@@ -2544,6 +2587,7 @@ function freshStart() {
   AUDIO.stop(SND_SONAR); AUDIO.stop(SND_BOATPASS); AUDIO.stop(SND_WHALE); AUDIO.stop(SND_FINALE);
   AUDIO.setMode("off");
   state.started = false;
+  document.documentElement.classList.add("at-start");
   els.startOverlay.classList.remove("hidden");
   els.scorePill.classList.add("hidden");
   els.progressText.textContent = UI().start;
@@ -2585,6 +2629,8 @@ function startGame(withFullscreen) {
   save();
   state.started = true;
   if (state.sound) AUDIO.prime();   // Audiowiedergabe per Nutzergeste freischalten
+  document.documentElement.classList.remove("at-start");
+  window.scrollTo(0, 0);
   els.startOverlay.classList.add("hidden");
   renderMap();
   showMission(1);
@@ -2661,8 +2707,31 @@ els.nextBtn.addEventListener("click", () => {
 });
 els.resetBtn.addEventListener("click", fullReset);
 els.readAloudBtn.addEventListener("click", readCurrentText);
-els.printBtn.addEventListener("click", () => window.print());
 els.certMapBtn.addEventListener("click", goToMap);
+if (els.certCopyBtn) els.certCopyBtn.addEventListener("click", () => {
+  const url = els.certUrlText ? els.certUrlText.textContent : buildCertUrl();
+  const done = () => {
+    const old = UI().certCopy;
+    els.certCopyBtn.textContent = UI().certCopied;
+    setTimeout(() => { els.certCopyBtn.textContent = old; }, 2000);
+  };
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(done).catch(() => fallbackCopy(url, done));
+    } else { fallbackCopy(url, done); }
+  } catch (e) { fallbackCopy(url, done); }
+});
+function fallbackCopy(text, done) {
+  try {
+    const ta = document.createElement("textarea");
+    ta.value = text; ta.setAttribute("readonly", "");
+    ta.style.position = "absolute"; ta.style.left = "-9999px";
+    document.body.appendChild(ta); ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+    if (done) done();
+  } catch (e) {}
+}
 els.certRestartBtn.addEventListener("click", () => {
   freshStart();
   showScreen("map");
@@ -2697,41 +2766,6 @@ els.soundToggle.addEventListener("click", () => {
   if (!state.sound) AUDIO.muteAll();
   else AUDIO.ensure();
 });
-
-// Urkunde per E-Mail / Newsletter (DSGVO)
-function updateMailBtn() {
-  const any = (els.consentCert && els.consentCert.checked) || (els.consentNews && els.consentNews.checked);
-  const hasMail = els.mailInput && /\S+@\S+\.\S+/.test(els.mailInput.value.trim());
-  if (els.mailBtn) els.mailBtn.disabled = !(any && hasMail);
-}
-if (els.consentCert) els.consentCert.addEventListener("change", updateMailBtn);
-if (els.consentNews) els.consentNews.addEventListener("change", updateMailBtn);
-if (els.mailInput) els.mailInput.addEventListener("input", updateMailBtn);
-if (els.mailBtn) {
-  els.mailBtn.addEventListener("click", () => {
-    const email = els.mailInput ? els.mailInput.value.trim() : "";
-    if (!email) return;
-    // Newsletter-Einwilligung: kleine Datei für den Entwickler/Pro Ocean erzeugen (DSGVO-Nachweis)
-    if (els.consentNews && els.consentNews.checked) {
-      try {
-        const record = {
-          email, newsletter: true, certificate: !!(els.consentCert && els.consentCert.checked),
-          name: state.name || "", shells: state.shells, recycled: state.recycled,
-          consentText: UI().consentNews, timestamp: new Date().toISOString()
-        };
-        const blob = new Blob([JSON.stringify(record, null, 2)], { type: "application/json" });
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = "proocean_newsletter_consent.json";
-        document.body.appendChild(a); a.click(); a.remove();
-      } catch (e) {}
-    }
-    // Urkunde per E-Mail: Mailprogramm öffnen (keine Speicherung)
-    if (els.consentCert && els.consentCert.checked) {
-      try { window.location.href = buildCertMailto(); } catch (e) {}
-    }
-  });
-}
 
 els.audio.addEventListener("pause", () => setEq(false));
 els.audio.addEventListener("play", () => setEq(true));
@@ -2809,7 +2843,11 @@ function updateCamera() {
   let ty = vh / 2 - (van.y / 100) * CH;
   tx = Math.min(0, Math.max(vw - CW, tx));
   ty = Math.min(0, Math.max(vh - CH, ty));
-  c.style.transform = `translate3d(${Math.round(tx)}px, ${Math.round(ty)}px, 0)`;
+  const txr = Math.round(tx), tyr = Math.round(ty);
+  if (c._lastTx !== txr || c._lastTy !== tyr) {   // nur bei echter Änderung neu setzen
+    c.style.transform = `translate3d(${txr}px, ${tyr}px, 0)`;
+    c._lastTx = txr; c._lastTy = tyr;
+  }
 }
 function updateViewportMode() {
   const r = document.documentElement;
@@ -2824,6 +2862,8 @@ function updateViewportMode() {
 window.addEventListener("resize", updateViewportMode);
 window.addEventListener("orientationchange", () => setTimeout(updateViewportMode, 250));
 updateViewportMode();
+// Startbildschirm sichtbar -> Seite scrollbar (klappt auf dem Handy die Safari-Leiste ein)
+document.documentElement.classList.add("at-start");
 
 // Schlanker Test-Hook (nur für automatisierte Tests; im Spiel ungenutzt)
 if (typeof window !== "undefined") {

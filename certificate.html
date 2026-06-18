@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1d6fb8">
+  <title>Pro Ocean – Urkunde</title>
+  <link rel="stylesheet" href="style.css?v=22">
+  <style>
+    /* Nur kleine Ergänzungen – das Urkunden-Layout kommt aus style.css */
+    body { min-height: 100%; }
+    .cert-page { max-width: 880px; margin: 0 auto; padding: 16px 12px 40px; }
+    .local-note {
+      max-width: 720px; margin: 0 auto 14px; background: rgba(255,255,255,0.92);
+      border-radius: 14px; padding: 12px 16px; font-size: 0.86rem; line-height: 1.4;
+      color: #143b52; border: 1px solid rgba(29,111,184,0.25);
+    }
+    .cert-page-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 16px 0 0; }
+    @media print {
+      .local-note, .cert-page-actions { display: none !important; }
+      .cert-page { padding: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="cert-page">
+    <p class="local-note" id="localNote"></p>
+    <main class="cert-screen">
+      <div class="cert-card" id="certCard">
+        <img class="cert-logo" src="assets/brand/proocean_logo.png" alt="Pro Ocean">
+        <p class="eyebrow" id="cEyebrow"></p>
+        <h2 id="cTitle"></h2>
+        <p id="cName" class="cert-name"></p>
+        <p id="cText" class="cert-text"></p>
+        <div id="cCards" class="cert-cards"></div>
+        <p id="cScore" class="cert-score"></p>
+        <div id="cStats" class="cert-stats"></div>
+        <p id="cDate" class="cert-date"></p>
+        <p id="cContact" class="cert-contact">
+          <span id="cContactText"></span>
+          <a href="https://www.pro-ocean.com/de/kontakt/" target="_blank" rel="noopener">https://www.pro-ocean.com/de/kontakt/</a>
+        </p>
+      </div>
+    </main>
+    <div class="cert-page-actions no-print">
+      <a id="playLink" class="ghost-button dark" href="index.html"></a>
+    </div>
+  </div>
+
+  <script>
+  "use strict";
+  (function () {
+    // ---- Statische Spiel-Daten (dieselbe Urkundenlogik wie im Spiel) ----
+    var CAT = {
+      can: { de: "Dose", en: "Can" }, bottle: { de: "Flasche", en: "Bottle" }, tube: { de: "Tube", en: "Tube" },
+      ball: { de: "Ball", en: "Ball" }, toy: { de: "Spielzeug", en: "Toy" }, cap: { de: "Deckel", en: "Cap" },
+      bulb: { de: "Glühbirne", en: "Light bulb" }, card: { de: "Karte", en: "Card" }, shoe: { de: "Schuh", en: "Shoe" },
+      lighter: { de: "Feuerzeug", en: "Lighter" }, wrapper: { de: "Verpackung", en: "Wrapper" }, cup: { de: "Becher", en: "Cup" },
+      hygiene: { de: "Hygiene-Müll", en: "Hygiene item" }, net: { de: "Netz/Beutel", en: "Net/Bag" },
+      plastic: { de: "Plastikteil", en: "Plastic part" }, capsule: { de: "Kaffeekapsel", en: "Coffee pod" },
+      foil: { de: "Folie", en: "Foil/Film" }, other: { de: "Sonstiges", en: "Other" }
+    };
+    var TOTAL_CATS = Object.keys(CAT).length;
+    var ANIMALS = [
+      { image: "assets/photos/seagull.jpg", de: "Möwe", en: "Seagull" },
+      { image: "assets/photos/sea_lion.jpg", de: "Seelöwe", en: "Sea lion" },
+      { image: "assets/photos/penguin.jpg", de: "Pinguin", en: "Penguin" },
+      { image: "assets/photos/seahorse.jpg", de: "Seepferdchen", en: "Seahorse" },
+      { image: "assets/photos/dolphin.jpg", de: "Delfin", en: "Dolphin" },
+      { image: "assets/photos/humpback_whale.jpg", de: "Buckelwal", en: "Humpback whale" },
+      { image: "assets/photos/baby_seal.jpg", de: "Robbenjunges", en: "Seal pup" },
+      { image: "assets/images/jellyfish.svg", de: "Qualle", en: "Jellyfish" }
+    ];
+    var T = {
+      de: {
+        eyebrow: "Pro Ocean Forscher-Urkunde",
+        title: "Urkunde der Ozean-Lauscher",
+        text: "hat alle Stimmen des Ozeans entdeckt – die lauten, die leisen und sogar die stillen – und weiß jetzt, warum das Meer unseren Schutz braucht.",
+        anon: "Ein mutiger Ozean-Forscher / eine mutige Ozean-Forscherin",
+        score: function (n, r) { return "Gesammelte Muscheln: " + n + " 🐚 · Recycelte Müllteile: " + r + " ♻️"; },
+        turbo: function (sc, r) { return "Turbo-Finale: " + sc + " Punkte " + r; },
+        statsTitle: "Dein Müll-Fund",
+        statsTotal: function (n) { return "Insgesamt eingesammelt: " + n + " Teile"; },
+        statsDistinct: function (d, tot) { return "Verschiedene Müllarten: " + d + " von " + tot; },
+        contact: "Haben wir dein Interesse geweckt? Dann kontaktiere uns über:",
+        localNote: "Die Urkunde wird nur lokal in deinem Browser erzeugt. Die eingegebenen Daten werden nicht an uns gesendet und nicht gespeichert.",
+        print: "🖨️ Urkunde drucken / als PDF speichern",
+        play: "▶️ Zum Spiel"
+      },
+      en: {
+        eyebrow: "Pro Ocean Explorer Certificate",
+        title: "Certificate of the Ocean Listeners",
+        text: "has discovered all the voices of the ocean – the loud ones, the quiet ones and even the silent ones – and now knows why the sea needs our protection.",
+        anon: "A brave ocean explorer",
+        score: function (n, r) { return "Shells collected: " + n + " 🐚 · Litter recycled: " + r + " ♻️"; },
+        turbo: function (sc, r) { return "Turbo finale: " + sc + " points " + r; },
+        statsTitle: "Your litter haul",
+        statsTotal: function (n) { return "Collected in total: " + n + " pieces"; },
+        statsDistinct: function (d, tot) { return "Different litter types: " + d + " of " + tot; },
+        contact: "Have we sparked your interest? Then get in touch with us at:",
+        localNote: "The certificate is generated locally in your browser only. The data you enter is not sent to us and not stored.",
+        print: "🖨️ Print certificate / save as PDF",
+        play: "▶️ Play the game"
+      }
+    };
+    function turboRating(s) { return s >= 200 ? "⭐⭐⭐" : s >= 100 ? "⭐⭐" : s > 0 ? "⭐" : "–"; }
+
+    // ---- Parameter sicher auslesen ----
+    var p = new URLSearchParams(location.search);
+    var lang = (p.get("lang") === "en") ? "en" : "de";
+    document.documentElement.lang = lang;
+    var u = T[lang];
+
+    function num(key) { var v = parseInt(p.get(key), 10); return isFinite(v) && v >= 0 ? v : 0; }
+    var name = (p.get("name") || "").slice(0, 30).trim();          // max. 30 Zeichen, optional
+    var shells = num("score");
+    var recycled = num("recycled");
+    var turboRaw = p.get("turbo");
+    var turbo = (turboRaw != null && turboRaw !== "" && isFinite(parseInt(turboRaw, 10))) ? parseInt(turboRaw, 10) : null;
+    var collectedTrashCount = num("collectedTrashCount");
+
+    // trashTypes = "key:count,key:count" – nur bekannte Kategorien & Zahlen zulassen
+    var types = {};
+    (p.get("trashTypes") || "").split(",").forEach(function (pair) {
+      var kv = pair.split(":");
+      var k = (kv[0] || "").trim();
+      var c = parseInt(kv[1], 10);
+      if (CAT[k] && isFinite(c) && c > 0) types[k] = c;
+    });
+    var distinct = Object.keys(types).length;
+
+    // Datum (ISO oder beliebiger String) -> lokal formatiert
+    var dateStr = "";
+    var rawDate = p.get("date") || "";
+    var d = new Date(rawDate);
+    if (rawDate && !isNaN(d.getTime())) {
+      dateStr = d.toLocaleDateString(lang === "de" ? "de-DE" : "en-GB", { day: "numeric", month: "long", year: "numeric" });
+    } else {
+      dateStr = new Date().toLocaleDateString(lang === "de" ? "de-DE" : "en-GB", { day: "numeric", month: "long", year: "numeric" });
+    }
+
+    // ---- Rendern (textContent für alle URL-Daten) ----
+    function set(id, txt) { var el = document.getElementById(id); if (el) el.textContent = txt; }
+    set("localNote", u.localNote);
+    set("cEyebrow", u.eyebrow);
+    set("cTitle", u.title);
+    set("cName", name || u.anon);
+    set("cText", u.text);
+    set("cScore", u.score(shells, recycled) + (turbo != null ? "  ·  " + u.turbo(turbo, turboRating(turbo)) : ""));
+    set("cDate", dateStr);
+    set("cContactText", u.contact);
+    set("playLink", u.play);
+
+    // Tier-Karten (immer alle – am Spielende sind alle entdeckt)
+    var cards = document.getElementById("cCards");
+    ANIMALS.forEach(function (a) {
+      var wrap = document.createElement("div");
+      wrap.className = "cert-animal";
+      var img = document.createElement("img");
+      img.src = a.image; img.alt = a[lang];
+      var span = document.createElement("span");
+      span.textContent = a[lang];
+      wrap.appendChild(img); wrap.appendChild(span);
+      cards.appendChild(wrap);
+    });
+
+    // Müll-Statistik
+    var stats = document.getElementById("cStats");
+    var h3 = document.createElement("h3"); h3.className = "stats-title"; h3.textContent = u.statsTitle;
+    var sum = document.createElement("p"); sum.className = "stats-sum";
+    sum.textContent = u.statsDistinct(distinct, TOTAL_CATS) + " · " + u.statsTotal(collectedTrashCount);
+    stats.appendChild(h3); stats.appendChild(sum);
+    var keys = Object.keys(types).sort(function (a, b) { return types[b] - types[a]; });
+    if (keys.length) {
+      var grid = document.createElement("div"); grid.className = "stats-grid";
+      keys.forEach(function (k) {
+        var chip = document.createElement("div"); chip.className = "stat-chip";
+        var nm = document.createElement("span"); nm.className = "stat-name"; nm.textContent = CAT[k][lang];
+        var ct = document.createElement("span"); ct.className = "stat-count"; ct.textContent = types[k] + "×";
+        chip.appendChild(nm); chip.appendChild(ct); grid.appendChild(chip);
+      });
+      stats.appendChild(grid);
+    }
+  })();
+  </script>
+</body>
+</html>
